@@ -1,0 +1,28 @@
+version: "3"
+
+services: 
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbit
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+    postgres:
+        image: postgres:9.6
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_PASSWORD: root
+
+    pgadmin:
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"
+            PGADMIN_DEFAULT_PASSWORD: "admin"
+        ports:
+            - "16543:80"
+        depends_on:
+            - postgres

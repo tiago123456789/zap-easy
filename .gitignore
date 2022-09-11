@@ -1,0 +1,8 @@
+bot/node_modules/
+bot/.env
+bot/build
+bot/token
+
+api/node_modules/
+api/.env
+api/dist
