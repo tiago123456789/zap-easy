@@ -21,11 +21,7 @@ create({
             }
         ).listen()
 
-        client.onMessage(message => {
-            // @ts-ignore
-            console.log(message.from, message.text)
-        })
     })
-    .catch((erro) => {
-        console.log(erro);
+    .catch((err) => {
+        console.log(err);
     });
