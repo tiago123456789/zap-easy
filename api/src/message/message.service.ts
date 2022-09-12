@@ -9,6 +9,7 @@ import { Message } from "./entities/message.entity";
 import * as crypto from "crypto";
 import { Media } from "./entities/media.entity";
 import { TypeMessage } from "src/common/types/type-message";
+import { DocumentMessageDto } from "./dtos/document-message.dto";
 
 @Injectable()
 export class MessageService {
@@ -45,7 +46,37 @@ export class MessageService {
         await this.amqpConnection.publish(
             process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
             "new_message", 
-            { isMedia: true, ...imageMessageDto }
+            { type: TypeMessage.IMAGE, ...imageMessageDto }
+        )
+        return messageCreated;
+    }
+
+    async sendDocument(documentMessageDto: DocumentMessageDto) {
+        const image = documentMessageDto.document.split("base64,")[0]
+        const { Location: fileLink } = await this.s3.upload({
+            Bucket: process.env.S3_BUCKET,
+            Key: `${(new Date().getTime())}${documentMessageDto.to}`,
+            Body: image,
+            ContentEncoding: "base64"
+        }).promise();
+
+        const media: Media = new Media();
+        media.type = TypeMessage.IMAGE;
+        media.name = fileLink;
+
+        const message: Message = new Message()
+        message.text = documentMessageDto.text;
+        message.to = documentMessageDto.to;
+        message.media = media;
+        message.createdAt = new Date();
+        message.updatedAt = new Date();
+        message.sendedAt = new Date();
+        const messageCreated = this.repository.save(message)
+
+        await this.amqpConnection.publish(
+            process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
+            "new_message", 
+            { type: TypeMessage.DOCUMENT, ...documentMessageDto }
         )
         return messageCreated;
     }
@@ -61,7 +92,7 @@ export class MessageService {
         await this.amqpConnection.publish(
             process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
             "new_message", 
-            { isMedia: false, ...messageDto }
+            { type: TypeMessage.TEXT, ...messageDto }
         )
 
         return messageCreated
