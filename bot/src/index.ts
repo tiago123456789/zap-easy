@@ -16,8 +16,15 @@ create({
                 options: {}
             },
             async (message: { [key: string]: any}) => {
-                
-                await client.sendText(`${message.to}@c.us`, message.text)
+                if (message.isMedia) {
+                    return client.sendImageFromBase64(
+                        `${message.to}@c.us`, 
+                        message.image,
+                        message.text
+                    );
+                }
+
+                return client.sendText(`${message.to}@c.us`, message.text)
             }
         ).listen()
 

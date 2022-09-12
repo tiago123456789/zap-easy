@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Media } from "./media.entity";
 
 @Entity()
 export class Message {
@@ -20,4 +21,7 @@ export class Message {
 
   @Column({ length: 14 })
   to: string;
+
+  @OneToOne(() => Media, (media) => media.id, { nullable: true })
+  media: Media;
 }
