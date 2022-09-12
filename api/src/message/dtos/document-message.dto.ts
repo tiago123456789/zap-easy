@@ -1,7 +1,7 @@
 import { IsNotEmpty, Length } from 'class-validator';
 
-export class ImageMessageDto {
-
+export class DocumentMessageDto {
+  
   @IsNotEmpty()
   text: string;
 
@@ -10,6 +10,6 @@ export class ImageMessageDto {
   to: string;
 
   @IsNotEmpty()
-  image: string;
+  document: string;
   
 }

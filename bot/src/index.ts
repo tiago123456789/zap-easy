@@ -3,9 +3,9 @@ import { create } from 'venom-bot'
 import Consumer from './queue/Consumer';
 
 create({
-        session: 'session', 
-        multidevice: true
-    })
+    session: 'session',
+    multidevice: true
+})
     .then((client) => {
 
         new Consumer(
@@ -15,16 +15,35 @@ create({
                 routingKey: "new_message",
                 options: {}
             },
-            async (message: { [key: string]: any}) => {
-                if (message.isMedia) {
-                    return client.sendImageFromBase64(
-                        `${message.to}@c.us`, 
-                        message.image,
-                        message.text
-                    );
+            async (message: { [key: string]: any }) => {
+                const sendByType = {
+                    "image": () => {
+                        return client.sendImageFromBase64(
+                            `${message.to}@c.us`,
+                            message.image,
+                            "file",
+                            message.text
+                        );
+                    },
+                    "voice": () => {
+
+                    },
+                    "document": () => {
+                        return client
+                            .sendFileFromBase64(
+                                `${message.to}@c.us`,
+                                message.document,
+                                'file',
+                                message.text
+                            )
+                    },
+                    "text": () => {
+                        return client.sendText(`${message.to}@c.us`, message.text)
+                    }
                 }
 
-                return client.sendText(`${message.to}@c.us`, message.text)
+                // @ts-ignore
+                return sendByType[message.type]();
             }
         ).listen()
 
