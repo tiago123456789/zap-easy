@@ -16,16 +16,19 @@ create({
                 options: {}
             },
             async (message: { [key: string]: any}) => {
-                
-                await client.sendText(`${message.to}@c.us`, message.text)
+                if (message.isMedia) {
+                    return client.sendImageFromBase64(
+                        `${message.to}@c.us`, 
+                        message.image,
+                        message.text
+                    );
+                }
+
+                return client.sendText(`${message.to}@c.us`, message.text)
             }
         ).listen()
 
-        client.onMessage(message => {
-            // @ts-ignore
-            console.log(message.from, message.text)
-        })
     })
-    .catch((erro) => {
-        console.log(erro);
+    .catch((err) => {
+        console.log(err);
     });

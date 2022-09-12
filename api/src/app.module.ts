@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MessagesModule } from './message/message.module';
+import { CommonModule } from './common/common.module';
 
 
 @Module({
@@ -30,7 +31,8 @@ import { MessagesModule } from './message/message.module';
           logging: configService.get("ENV") == "dev" ? true : false
         };
       }
-    })
+    }),
+    CommonModule
   ],
   controllers: [AppController],
   providers: [AppService],
