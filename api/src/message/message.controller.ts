@@ -1,10 +1,13 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from "@nestjs/common";
+import { AuthorizationGuard } from "src/security/authorization.guard";
+import { AudioMessageDto } from "./dtos/audio-message.dto";
 import { DocumentMessageDto } from "./dtos/document-message.dto";
 import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
 import { MessageService } from "./message.service";
 
+@UseGuards(AuthorizationGuard)
 @Controller("/messages")
 export class MessageController {
 
@@ -26,7 +29,13 @@ export class MessageController {
 
     @Post("/documents")
     @HttpCode(201)
-    public sendDocuments(@Body() documentMessageDto: DocumentMessageDto) {
+    public sendDocument(@Body() documentMessageDto: DocumentMessageDto) {
         return this.messageService.sendDocument(documentMessageDto)
+    }
+
+    @Post("/audios")
+    @HttpCode(201)
+    public sendAudio(@Body() audioMessageDto: AudioMessageDto) {
+        return this.messageService.sendAudio(audioMessageDto)
     }
 }

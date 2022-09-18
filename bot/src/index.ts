@@ -1,53 +1,49 @@
 require("dotenv").config();
 import { create } from 'venom-bot'
+import { io } from "socket.io-client"
 import Consumer from './queue/Consumer';
+import SendMessageCommand from "./commands/SendMessageCommand"
+import App from './configs/App';
+import Producer from './queue/Producer';
+import NotifyNewRecievedMessageCommand from './commands/NotifyNewReceivedMessageCommand';
 
-create({
-    session: 'session',
-    multidevice: true
-})
-    .then((client) => {
+const sendMessageCommand = new SendMessageCommand();
+const receivedMessageProducer = new Producer(App.EXCHANGE_NEW_RECEIVED_MESSAGE)
+const notifyNewRecievedMessageCommand = new NotifyNewRecievedMessageCommand(
+    receivedMessageProducer
+)
+const newMessageConsumer = new Consumer(
+    App.QUEUE_NEW_MESSAGE,
+    App.EXCHANGE_NEW_MESSAGE,
+)
 
-        new Consumer(
-            {
-                name: "new_message_exchange",
-                type: "direct",
-                routingKey: "new_message",
-                options: {}
-            },
-            async (message: { [key: string]: any }) => {
-                const sendByType = {
-                    "image": () => {
-                        return client.sendImageFromBase64(
-                            `${message.to}@c.us`,
-                            message.image,
-                            "file",
-                            message.text
-                        );
-                    },
-                    "voice": () => {
+// const socket = io("http://localhost:3000")
 
-                    },
-                    "document": () => {
-                        return client
-                            .sendFileFromBase64(
-                                `${message.to}@c.us`,
-                                message.document,
-                                'file',
-                                message.text
-                            )
-                    },
-                    "text": () => {
-                        return client.sendText(`${message.to}@c.us`, message.text)
-                    }
-                }
+// socket.on("connect", () => {
+//     console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+// });
 
-                // @ts-ignore
-                return sendByType[message.type]();
-            }
-        ).listen()
+// socket.on("disconnect", () => {
+//     console.log(socket.id); // undefined
+// });
 
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+
+// create({
+//     session: 'session',
+// })
+//     .then(async (client) => {
+
+//         client.onMessage(async (message) => {
+//             await notifyNewRecievedMessageCommand.execute(message, client)
+//         })
+
+//         newMessageConsumer
+//             .setHandler(async (message: { [key: string]: any }) => {
+//                 await sendMessageCommand.execute(message, client)
+//             })
+//             .listen()
+
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//     });

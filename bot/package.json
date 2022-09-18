@@ -17,6 +17,7 @@
     "@types/amqplib": "^0.8.2",
     "amqplib": "^0.10.3",
     "dotenv": "^16.0.2",
+    "socket.io-client": "^4.5.2",
     "venom-bot": "^4.3.0"
   },
   "devDependencies": {
