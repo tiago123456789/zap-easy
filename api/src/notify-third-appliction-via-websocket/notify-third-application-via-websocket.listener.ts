@@ -37,6 +37,8 @@ export class NotifyThirdApplicationViaWebsocketListener {
             body: msg.body,
             from: msg.from,
             name: msg.sender.displayName,
+            base64Media: msg.base64Media,
+            mimetype: msg.mimetype
         })
     }
 }
