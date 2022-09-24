@@ -1,6 +1,5 @@
 require("dotenv").config();
 import { create } from 'venom-bot'
-import { io } from "socket.io-client"
 import Consumer from './queue/Consumer';
 import SendMessageCommand from "./commands/SendMessageCommand"
 import App from './configs/App';
@@ -17,33 +16,22 @@ const newMessageConsumer = new Consumer(
     App.EXCHANGE_NEW_MESSAGE,
 )
 
-// const socket = io("http://localhost:3000")
+create({
+    session: 'session',
+})
+    .then(async (client) => {
 
-// socket.on("connect", () => {
-//     console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-// });
+        client.onMessage(async (message) => {
+            await notifyNewRecievedMessageCommand.execute(message, client)
+        })
 
-// socket.on("disconnect", () => {
-//     console.log(socket.id); // undefined
-// });
+        newMessageConsumer
+            .setHandler(async (message: { [key: string]: any }) => {
+                await sendMessageCommand.execute(message, client)
+            })
+            .listen()
 
-
-// create({
-//     session: 'session',
-// })
-//     .then(async (client) => {
-
-//         client.onMessage(async (message) => {
-//             await notifyNewRecievedMessageCommand.execute(message, client)
-//         })
-
-//         newMessageConsumer
-//             .setHandler(async (message: { [key: string]: any }) => {
-//                 await sendMessageCommand.execute(message, client)
-//             })
-//             .listen()
-
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     });
+    })
+    .catch((err) => {
+        console.log(err);
+    });

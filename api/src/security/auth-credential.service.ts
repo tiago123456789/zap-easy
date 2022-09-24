@@ -45,6 +45,6 @@ export class AuthCredentialService {
             [TypeAuthCredential.API]: (15 * 60)
         }
         const type = credentialReturned[0].type
-        return this.jwtService.sign({}, { expiresIn: expirationByType[type] })
+        return this.jwtService.sign({ type }, { expiresIn: expirationByType[type] })
     }
 }

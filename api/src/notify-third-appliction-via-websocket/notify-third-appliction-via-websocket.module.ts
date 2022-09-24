@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { NotifyThirdApplicationViaWebsocketListener } from "./notify-third-application-via-websocket.listen"
+import { NotifyThirdApplicationViaWebsocketListener } from "./notify-third-application-via-websocket.listener"
 
 @Module({
-    imports: [NotifyThirdApplicationViaWebsocketListener],
+    imports: [],
+    providers: [NotifyThirdApplicationViaWebsocketListener],
 })
 export class NotifyThirdApplicationViaWebsocketModule {}
