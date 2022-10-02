@@ -9,6 +9,7 @@ async function bootstrap() {
   app.use(bodyParser.json({
     limit: '15mb'
   }));
+
   await app.listen(3000);
 }
 bootstrap();

@@ -1,4 +1,12 @@
 export default {
+    EXCHANGE_UPDATE_STATUS_INSTANCE: {
+        name: "update_status_instance",
+        type: "direct",
+        routingKey: "update_status_routing_key",
+        options: {
+            durabl: true
+        }
+    },
     EXCHANGE_NEW_RECEIVED_MESSAGE:  {
         name: "new_received_message_exchange",
         type: "fanout",
@@ -14,5 +22,5 @@ export default {
     QUEUE_NEW_MESSAGE:  {
         name: "new_message",
         options: { durable: true }
-    }
+    },
 }

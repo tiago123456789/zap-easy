@@ -1,27 +1,41 @@
-import { WebSocketServer, WebSocketGateway, SubscribeMessage, OnGatewayInit } from "@nestjs/websockets"
+import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets"
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server, Socket } from "socket.io"
 import * as jwt from "jsonwebtoken"
 import { TypeAuthCredential } from "src/common/types/type-auth-credential";
+import { AuthCredentialService } from "src/security/auth-credential.service";
 
-@WebSocketGateway()
+@WebSocketGateway({
+    cors: {
+        origin: "*",
+        allowedHeaders: ["Authorization"],
+        credentials: true
+    }
+})
 export class NotifyThirdApplicationViaWebsocketListener {
+
+    constructor(
+        private readonly authCredentialService: AuthCredentialService
+    ) {
+
+    }
 
     @WebSocketServer()
     private server: Server;
 
     async handleConnection(client: Socket) {
         try {
+            let clientId = client.handshake.query.token
+            if (clientId) {
+                await this.authCredentialService.authenticateClientWebsocket(
+                    // @ts-ignore
+                    clientId, client.handshake.headers.origin
+                )
+                return;
+            }
+
             let token = (client.handshake.headers.authorization)
-            if (!token) {
-                client.disconnect()
-            }
-            token = token.replace("Bearer ", "")
-            const decodedPayload = jwt.verify(token, process.env.JWT_SECRET)
-            // @ts-ignore
-            if (decodedPayload.type !== TypeAuthCredential.WEBSOCKET) {
-                client.disconnect()
-            }
+            await this.authCredentialService.hasJwtTokenValid(token)
         } catch (error) {
             client.disconnect()
         }
@@ -41,4 +55,5 @@ export class NotifyThirdApplicationViaWebsocketListener {
             mimetype: msg.mimetype
         })
     }
+
 }

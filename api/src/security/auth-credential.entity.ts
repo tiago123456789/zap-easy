@@ -16,6 +16,9 @@ export class AuthCredential {
     @Column('varchar')
     type: string;
 
+    @Column("varchar", { nullable: true })
+    domain: string
+
     @BeforeInsert() 
     populate() { 
         this.clientId = v4();

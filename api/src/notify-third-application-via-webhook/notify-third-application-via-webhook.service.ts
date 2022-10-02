@@ -23,14 +23,14 @@ export class NotifyThirdApplicationViaWebhookService {
     return this.repository.save(newRegister)
   }
 
-  @RabbitSubscribe({
-    exchange: 'new_received_message_exchange',
-    routingKey: '',
-    queue: 'received_message_queue_to_trigger_webhook',
-  })
-  public async notifyNewReceivedMessage(msg: {}) {
-    const webhookUrl = await this.repository.findOne();
-    const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
-    await axios.post(url, msg)
-  }
+  // @RabbitSubscribe({
+  //   exchange: 'new_received_message_exchange',
+  //   routingKey: '',
+  //   queue: 'received_message_queue_to_trigger_webhook',
+  // })
+  // public async notifyNewReceivedMessage(msg: {}) {
+  //   const webhookUrl = await this.repository.findOne();
+  //   const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
+  //   await axios.post(url, msg)
+  // }
 }

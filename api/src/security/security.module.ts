@@ -22,6 +22,6 @@ import { AuthCredentialCommander } from './auth-credential.command';
     ],
     controllers: [AuthCredentialController],
     providers: [AuthCredentialService, AuthCredentialCommander],
-    exports: [AuthCredentialCommander]
+    exports: [AuthCredentialCommander, AuthCredentialService]
 })
 export class SecurityModule {}

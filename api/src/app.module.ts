@@ -10,6 +10,9 @@ import { SecurityModule } from './security/security.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { NotifyThirdApplicationViaWebhookModule } from './notify-third-application-via-webhook/notify-third-application-via-webhook.module';
 import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-appliction-via-websocket/notify-third-appliction-via-websocket.module';
+import { InstanceModule } from './instance/instance.module';
+import { S3Module } from 'nestjs-s3';
+import { AuthCredentialService } from './security/auth-credential.service';
 
 
 @Module({
@@ -41,6 +44,11 @@ import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-applict
         return {
           exchanges: [
             {
+              name: 'update_status_instance',
+              type: 'direct'
+              // routingKey: 'update_status_routing_key',
+            },
+            {
               name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
               type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
             },
@@ -53,11 +61,21 @@ import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-applict
         }
       }
     }),
+    S3Module.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          accessKeyId: configService.get("S3_CLIENT_ID"),
+          secretAccessKey:  configService.get("S3_CLIENT_SECRET"),
+        },
+      }),
+    }),
     CommonModule,
     SecurityModule,
     WebhookModule,
     NotifyThirdApplicationViaWebhookModule,
-    NotifyThirdApplicationViaWebsocketModule
+    NotifyThirdApplicationViaWebsocketModule,
+    InstanceModule
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -79,6 +97,15 @@ import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-applict
           uri: configService.get("RABBIT_URI")
         }
       }
+    }),
+    S3Module.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          accessKeyId: configService.get("S3_CLIENT_ID"),
+          secretAccessKey:  configService.get("S3_CLIENT_SECRET"),
+        },
+      }),
     }),
   ]
 })

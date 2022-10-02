@@ -26,6 +26,6 @@ export default class Producer {
             this.exchange, this.exchangeType, this.exchangeOptions
         );
 
-        return channel.publish(this.exchange, '', Buffer.from(JSON.stringify(data)));
+        return channel.publish(this.exchange, this.routingKey, Buffer.from(JSON.stringify(data)));
     }
 }

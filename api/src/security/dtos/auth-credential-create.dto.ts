@@ -4,4 +4,6 @@ export class AuthCredentialCreateDto {
     
     @IsNotEmpty()
     type: string
+
+    domain?: string
 }

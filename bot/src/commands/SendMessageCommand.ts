@@ -2,7 +2,7 @@ import { ICommand } from "./ICommand";
 
 export default class SendMessageCommand implements ICommand {
 
-    execute(message: { [key: string]: any; }, client: any): void {
+    execute(message: { [key: string]: any; }, client: any): Promise<void> {
         const sendByType = {
                     "image": () => {
                         return client.sendImageFromBase64(

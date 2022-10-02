@@ -1,5 +1,5 @@
 
 export interface ICommand {
 
-    execute(message: { [key: string]: any }, client: any): void;
+    execute(message: { [key: string]: any }, client: any): Promise<void>;
 }
