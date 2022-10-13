@@ -1,7 +1,9 @@
 import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { AuthCredentialService } from "./auth-credential.service";
 import { AuthCredentialDto } from "./dtos/auth-credential.dto";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthCredentialController {
 

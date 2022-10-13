@@ -28,6 +28,7 @@
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/platform-socket.io": "^7.6.12",
+    "@nestjs/swagger": "^4.5.11",
     "@nestjs/typeorm": "^7.1.5",
     "@nestjs/websockets": "^7.0.5",
     "aws-sdk": "^2.1213.0",
@@ -42,6 +43,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
     "socket.io": "^4.5.2",
+    "swagger-ui-express": "^4.5.0",
     "typeorm": "^0.2.32",
     "uuid": "^9.0.0"
   },
