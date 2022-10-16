@@ -62,7 +62,7 @@ Database:
 
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/database.drawio.png "Architecture the project")
 
-**OBSERVATION:** the current structure of database, but can be changed
+**OBSERVATION:** the current structure of database, but can be change.
 
 Warning:
 ----------
