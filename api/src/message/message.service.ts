@@ -18,9 +18,9 @@ export class MessageService {
         @InjectRepository(Message) private repository: Repository<Message>,
         private readonly amqpConnection: AmqpConnection,
         @InjectS3() private readonly s3: S3,
-    ) {}
-    
-    async sendImage(imageMessageDto: ImageMessageDto) {
+    ) { }
+
+    async sendImage(imageMessageDto: ImageMessageDto): Promise<Message> {
         const image = imageMessageDto.image.split("base64,")[0]
         const { Location: fileLink } = await this.s3.upload({
             Bucket: process.env.S3_BUCKET,
@@ -43,14 +43,14 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
-            "new_message", 
+            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+            "new_message",
             { type: TypeMessage.IMAGE, ...imageMessageDto }
         )
         return messageCreated;
     }
 
-    async sendDocument(documentMessageDto: DocumentMessageDto) {
+    async sendDocument(documentMessageDto: DocumentMessageDto): Promise<Message> {
         const document = documentMessageDto.document.split("base64,")[0]
         const { Location: fileLink } = await this.s3.upload({
             Bucket: process.env.S3_BUCKET,
@@ -73,14 +73,14 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
-            "new_message", 
+            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+            "new_message",
             { type: TypeMessage.DOCUMENT, ...documentMessageDto }
         )
         return messageCreated;
     }
-    
-    async sendAudio(audioMessageDto: AudioMessageDto) {
+
+    async sendAudio(audioMessageDto: AudioMessageDto): Promise<Message> {
         const audio = audioMessageDto.audio.split("base64,")[0]
         const { Location: fileLink } = await this.s3.upload({
             Bucket: process.env.S3_BUCKET,
@@ -103,14 +103,14 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
-            "new_message", 
+            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+            "new_message",
             { type: TypeMessage.VOICE, ...audioMessageDto }
         )
         return messageCreated;
     }
 
-    async send(messageDto: MessageDto) {
+    async send(messageDto: MessageDto): Promise<Message> {
         const message: Message = new Message()
         message.text = messageDto.text;
         message.to = messageDto.to;
@@ -119,14 +119,14 @@ export class MessageService {
         message.sendedAt = new Date();
         const messageCreated = this.repository.save(message)
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE, 
-            "new_message", 
+            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+            "new_message",
             { type: TypeMessage.TEXT, ...messageDto }
         )
 
         return messageCreated
     }
 
-    
+
 
 }

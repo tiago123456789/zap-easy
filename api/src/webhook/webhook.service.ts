@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { TypeMessage } from "src/common/types/type-message";
 import { MessageDto } from "src/message/dtos/message.dto";
 import { Repository } from "typeorm";
+import { CreatedWebhookDto } from "./created-webhook.dto";
 import { Webhook } from "./webhook.entity";
 
 @Injectable()
@@ -11,10 +12,10 @@ export class WebhookService {
 
     constructor(
         @InjectRepository(Webhook) private repository: Repository<Webhook>,
-        private readonly amqpConnection: AmqpConnection,
+        private amqpConnection: AmqpConnection,
     ) { }
 
-    async create() {
+    async create(): Promise<CreatedWebhookDto> {
         const webhook = await this.repository.save(new Webhook());
         const url = `${process.env.APP_URL}${webhook.id}?key=${webhook.key}`
         return { url, ...webhook };

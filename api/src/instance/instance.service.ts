@@ -26,7 +26,8 @@ export class InstanceService {
     })
   }
 
-  getQrcode(id) {
+  async getQrcode(id) {
+    await this.findById(id)
     const url = this.s3.getSignedUrl("getObject", {
       Bucket: process.env.S3_BUCKET,
       Key: `${id}.png`,
@@ -44,7 +45,7 @@ export class InstanceService {
 
   }
 
-  findAll() {
+  findAll(): Promise<Instance[]> {
     return this.repository.find({})
   }
 

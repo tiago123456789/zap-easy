@@ -10,8 +10,12 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Zap-easy api')
-    .setDescription('The api help you send text, voice, image or document message using your whatsapp more easily. WARNING: THE UNOFFICIAL SOLUCTION')
+    .setDescription('The api help you send text, voice, image or document message using your whatsapp more easily. WARNING: THE UNOFFICIAL SOLUTION')
     .setVersion('1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'TOKEN_JWT',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

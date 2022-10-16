@@ -9,9 +9,23 @@ import { WebhookService } from './webhook.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([Webhook]),
+        RabbitMQModule.forRootAsync(RabbitMQModule, {
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService): Promise<any> => {
+                return {
+                    exchanges: [
+                        {
+                            name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
+                            type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+                        }
+                    ],
+                    uri: configService.get("RABBIT_URI")
+                }
+            }
+        }),
     ],
     controllers: [WebhookController],
-    providers: [WebhookService, AmqpConnection]
+    providers: [WebhookService]
 
 })
-export class WebhookModule {}
+export class WebhookModule { }

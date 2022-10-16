@@ -12,7 +12,6 @@ export class CreatedWebhookDto {
         example: "4a0850e1-8965-4a24-a695-8adb5ad1fdd6",
         description: "The id of register on database"
     })
-    @ApiProperty()
     id: number;
 
     @ApiProperty({ 

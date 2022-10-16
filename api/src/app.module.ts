@@ -1,5 +1,5 @@
 import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -12,15 +12,12 @@ import { NotifyThirdApplicationViaWebhookModule } from './notify-third-applicati
 import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-appliction-via-websocket/notify-third-appliction-via-websocket.module';
 import { InstanceModule } from './instance/instance.module';
 import { S3Module } from 'nestjs-s3';
-import { AuthCredentialService } from './security/auth-credential.service';
-
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    MessagesModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -71,6 +68,7 @@ import { AuthCredentialService } from './security/auth-credential.service';
       }),
     }),
     CommonModule,
+    MessagesModule,
     SecurityModule,
     WebhookModule,
     NotifyThirdApplicationViaWebhookModule,
