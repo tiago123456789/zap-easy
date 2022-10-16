@@ -43,9 +43,21 @@ Features:
 - Notify third application running on browser via websocket when bot recieve new messages.
 - You can the webhook url to send text message more easily.
 
+Architecture:
+---------------------
+
+![architecture the project](./create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
+
+Explain the image above:
+- User send request to the api
+- The api save data in database and publish data in queue
+- The bot consume message the queue and send for people
+- When bot receive new message get this message and publish to the queue 
+- The api has a consumer that get message and notify via webhook and another consumer that get message and notify via websocket to all clients websocket connected.
+- Do you want consume new message received? But don't want implement webhook, don't want implemented client websocket or you use language different of javascript only you need create queue any name and connect this queue to the exchange named "new_received_message_exchange" because this exchange type is fanout, so all queues connected in this exchange receive a same message.
+
 Warning:
 ----------
-
 IF YOU NEED SEND HUGE VOLUME THE MESSAGE IN SHORT PERIOD TIME I'M RECOMMEND YOU USE **OFFICAL API**. IF YOU USE THIS PROJECT ALL RESPONSABILITIES CASE OCCOUR SOMETHING IS YOUR.
 
 
@@ -64,3 +76,5 @@ How to run the project locally:
     - Create file named **.env** based **.env.example** file in root of directory **bot**
     - Execute command **docker-compose up -d** to create following docker containers: postgres, pgadmin and rabbitmq
     - Execute command **npm run start:dev** to run your project
+
+
