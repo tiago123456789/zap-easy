@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Length } from 'class-validator';
 
-export class DocumentMessageDto {
+export class AudioMessageDto {
   
   @ApiProperty({ 
-    example: "Hi, look this document for me",
-    description: "The text of document message"
+    example: "Hi, look this audio for me",
+    description: "The text of audio message"
   })
   @IsNotEmpty()
   text: string;
@@ -20,10 +20,10 @@ export class DocumentMessageDto {
 
 
   @ApiProperty({ 
-    example: "data:application/pfd;base64,base_64_here",
-    description: "Pass document in base64Url. Case you need send another type of document look this link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types"
+    example: "data:audio/mpeg;base64,base64,base_64_here",
+    description: "Pass audio in base64Url."
   })
   @IsNotEmpty()
-  document: string;
+  audio: string;
   
 }

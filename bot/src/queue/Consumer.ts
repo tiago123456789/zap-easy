@@ -1,23 +1,31 @@
 import amqp from 'amqplib';
 import { Exchange } from './Exchange';
+import { Queue } from './Queue';
 
 export default class Consumer {
 
-    private handler: Function;
+    private handler: Function | undefined;
     private exchange: string;
     private exchangeType: string
     private exchangeOptions: { [key: string]: any }
     private routingKey: string
 
+    private queue: Queue;
+
     constructor(
+        queue: Queue,
         exchange: Exchange,
-        handler: Function
     ) {
         this.exchange = exchange.name
         this.exchangeType = exchange.type
         this.exchangeOptions = exchange.options
         this.routingKey = exchange.routingKey
-        this.handler = handler
+        this.queue = queue
+    }
+
+    setHandler(callback: Function) {
+        this.handler = callback;
+        return this;
     }
 
     async listen() {
@@ -25,13 +33,14 @@ export default class Consumer {
         const connection = await amqp.connect(process.env.RABBIT_URI)
         const channel = await connection.createChannel()
         await channel.assertExchange(this.exchange, this.exchangeType, this.exchangeOptions);
-        const q = await channel.assertQueue('', { exclusive: true })
+        const q = await channel.assertQueue(this.queue.name, this.queue.options)
         await channel.bindQueue(q.queue, this.exchange, this.routingKey);
         channel.consume(q.queue, async (msg: any) => {
             if (msg.content) {
                 const message = JSON.parse(msg.content.toString());
-                await this.handler(message)
+                await this.handler!(message)
+                channel.ack(msg)
             }
-        });
+        }, { noAck: false });
     }
 }

@@ -6,3 +6,6 @@ bot/tokens
 api/node_modules/
 api/.env
 api/dist
+
+client-websocket-example
+client-browser-websocket-example
