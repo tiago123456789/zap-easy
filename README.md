@@ -48,7 +48,7 @@ Architecture:
 
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
 
-Explain the image above:
+Explanation the image above:
 - User send request to the api
 - The api save data in database and publish data in queue
 - The bot consume message the queue and send for people
