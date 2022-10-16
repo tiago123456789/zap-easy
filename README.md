@@ -46,7 +46,7 @@ Features:
 Architecture:
 ---------------------
 
-![architecture the project](create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
+![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
 
 Explain the image above:
 - User send request to the api
