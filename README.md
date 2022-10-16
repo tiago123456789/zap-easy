@@ -54,7 +54,7 @@ Explanation the image above:
 - The bot consume message the queue and send for people
 - When bot receive new message get this message and publish to the queue 
 - The api has a consumer that get message and notify via webhook and another consumer that get message and notify via websocket to all clients websocket connected.
-- Do you want consume new message received? But don't want implement webhook, don't want implemented client websocket or you use language different of javascript only you need create queue any name and connect this queue to the exchange named "new_received_message_exchange" because this exchange type is fanout, so all queues connected in this exchange receive a same message.
+- Do you want consume new message received? But don't want implement webhook, don't want implement client websocket or you use language different of javascript only you need create queue any name and connect this queue to the exchange named "new_received_message_exchange" because this exchange type is fanout, so all queues connected in this exchange receive a same message. 
 
 Warning:
 ----------
