@@ -4,6 +4,22 @@ Architecture:
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
 
 
+How to work notification via webhook: 
+======================================
+
+- When any people send message to the What'sapp number the bot get a new message
+- The bot publish new message to exchange named **new_received_message_exchange** and all queues conneted with this exchange receive the message
+- In this case the api has a consumer waiting new message on queue, this queue is connected with the exchange named **new_received_message_exchange** so, the consumer get message and make a request for url specified sending the message.
+
+
+How to work notification via websocket: 
+======================================
+
+- When any people send message to the What'sapp number the bot get a new message
+- The bot publish new message to exchange named **new_received_message_exchange** and all queues conneted with this exchange receive the message
+- In this case the api has a consumer waiting new message on queue, this queue is connected with the exchange named **new_received_message_exchange** so, the consumer get message and send the message via websocket to all clients conneted on websocket server.
+
+
 Why I splited the project between API and BOT?
 =============================================
 
