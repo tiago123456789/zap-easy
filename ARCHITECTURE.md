@@ -3,6 +3,13 @@ Architecture:
 
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
 
+How to work the bot:
+=======================
+
+- When you start the bot process you passed with param the instance id because after create session web What'sapp time by time send message to notify the instance the bot is online.
+- The api consume the message and update database if instance is online or not.
+- The api receive the request to send message to specific phone number, get received data and publish on queue
+- The bot has a consumer listening the queue, get a new message and the bot send message to phone number specified. Case you need handler more messages more quickly you can create one more process the bot, but now you need specific the new intance id with a param, this way you can process more message less time because now you have 2 process the bot to consume the queue and send message.
 
 How to work notification via webhook: 
 ======================================
