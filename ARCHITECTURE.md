@@ -25,7 +25,7 @@ Why use these technologies?
 - Rabbitmq: i'm using because is open-source solution this way I can prevent stay locked a cldud provider, the rabbimq(version >= 3.7.0) allow me send message with size until 2GB it's very important for me because when bot receive media message(Media message is document, audio, video and image. The size limit of media message What'sapp is 16GB per message) and need publish this message into to the queue and the rabbitmq allow me work with pub/sub pattern when i'm using the fanout exchange.
 - Docker: help running postgres, rabbitmq and pgadmin without install nothing on machine.
 
-How to work the notitication via webhook?
+Why the notification via webhook?
 ===========================================
 
 When I starting to create the project I thinking how to notify third application when bot receive new message, i remember how the payment system notify the payment process status their using webhook to notify third application, for me this make sense because imagine for each client the payment system create a new code for connect third application of the client it's a huge problem keep this code. So I defined one way the project notify third application is via webhook.
@@ -36,7 +36,7 @@ The webhook some positive points:
 - You simplify the client life because no necessary create code to make request time by time to get the bot new messages received.
 
 
-How to work the notitication via websocket?
+Why the notification via websocket?
 ===========================================
 
 When I starting to create the project I thinking how to notify third application when bot receive new message, but i have one more challenge how to notify realtime because imagine you creating a chat solution to help the company serves all clients that send a message for the company What'sapp.
