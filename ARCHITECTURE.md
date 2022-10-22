@@ -3,6 +3,18 @@ Architecture:
 
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
 
+How to integrate your application without couple your applications with zap-easy
+=================================================================================
+
+When one person send new message the bot instance get this message and publish. The message is published to the exchange, the exchange type is fanout, so the fanout works like **pub/sub** pattern when message is published all queues subscribed on exchange receive the same message.
+
+Case you have one application and need listen messages received, so you can one queue, connect the queue with the exchange and lastly create a consumer process to listen queue to processe the message.
+
+The image below help you understand how to work the part:
+
+![integrate third application with zap-easy without use websocket or webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/integrate-third-application-uncouple-way.drawio.png "integrate third application with zap-easy without use websocket or webhook")
+
+
 How to work the bot:
 =======================
 
