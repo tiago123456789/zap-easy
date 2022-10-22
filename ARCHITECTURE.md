@@ -36,6 +36,10 @@ How to work notification via webhook:
 - In this case the api has a consumer waiting new message on queue, this queue is connected with the exchange named **new_received_message_exchange** so, the consumer get message and make a request for url specified sending the message.
 
 
+The image below help you understand how to work the bot instance:
+
+![architecture to notify new message via webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-the-notify-via-webhook.png "architecture to notify new message via webhook")
+
 How to work notification via websocket: 
 ======================================
 
