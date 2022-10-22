@@ -23,6 +23,11 @@ How to work the bot:
 - The api receive the request to send message to specific phone number, get received data and publish on queue
 - The bot has a consumer listening the queue, get a new message and the bot send message to phone number specified. Case you need handler more messages more quickly you can create one more process the bot, but now you need specific the new intance id with a param, this way you can process more message less time because now you have 2 process the bot to consume the queue and send message.
 
+The image below help you understand how to work the bot instance:
+
+![architecture the bot instance](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-the-bot-instance.png "architecture the bot instance")
+
+
 How to work notification via webhook: 
 ======================================
 
