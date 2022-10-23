@@ -1,9 +1,10 @@
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
+import { Nack, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectS3, S3 } from "nestjs-s3";
 import { Repository } from "typeorm";
 import { Instance } from "./instance.entity"
+import Queue from "../common/constants/Queue"
 
 @Injectable()
 export class InstanceService {
@@ -21,8 +22,8 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
-    return this.repository.update({ id }, { 
-      updatedAt: new Date(), isOnline: modifiedData.isOnline 
+    return this.repository.update({ id }, {
+      updatedAt: new Date(), isOnline: modifiedData.isOnline
     })
   }
 
@@ -62,14 +63,24 @@ export class InstanceService {
   }
 
   @RabbitSubscribe({
-    exchange: 'update_status_instance',
-    routingKey: 'update_status_routing_key',
-    queue: 'update_status_instance_queue',
+    exchange: Queue.UPDATE_STATUS_INSTANCE.EXCHANGE,
+    routingKey: Queue.UPDATE_STATUS_INSTANCE.ROUTING_KEY,
+    queue: Queue.UPDATE_STATUS_INSTANCE.QUEUE,
     queueOptions: {
-      durable: true
+      ...Queue.UPDATE_STATUS_INSTANCE.QUEUE_OPTIONS,
+      // @ts-ignore
+      arguments: {
+        'x-dead-letter-exchange': Queue.UPDATE_STATUS_INSTANCE_DLQ.EXCHANGE,
+        'x-dead-letter-routing-key': Queue.UPDATE_STATUS_INSTANCE_DLQ.ROUTING_KEY,
+      }
     }
   })
   public async updateStatusInstance(msg: { [key: string]: any }) {
-    await this.update(msg.id, msg)
+    try {
+      await this.update(msg.id, msg)
+    } catch (error) {
+      return new Nack(false)
+    }
+
   }
 }

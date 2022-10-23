@@ -7,7 +7,7 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "pm2 start ./build/index.js --name='bot'",
-    "start:dev": "nodemon  --watch './src/**/*.ts' --ignore './src/**/*.spec.ts' --exec 'ts-node' ./src/index.ts",
+    "start:dev": "nodemon  --watch './src/**/*.ts' --ignore './src/**/*.spec.ts' --exec 'ts-node' ./src/index.ts"
   },
   "keywords": [],
   "author": "",

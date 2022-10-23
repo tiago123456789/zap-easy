@@ -6,6 +6,7 @@ import { MessageDto } from "src/message/dtos/message.dto";
 import { Repository } from "typeorm";
 import { CreatedWebhookDto } from "./created-webhook.dto";
 import { Webhook } from "./webhook.entity";
+import Queue from "../common/constants/Queue"
 
 @Injectable()
 export class WebhookService {
@@ -33,8 +34,8 @@ export class WebhookService {
         }
 
         return this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
+            Queue.NEW_MESSAGE.EXCHANGE,
+            Queue.NEW_MESSAGE.ROUTING_KEY,
             { type: TypeMessage.TEXT, ...message }
         )
     }

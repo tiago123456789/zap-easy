@@ -4,7 +4,7 @@ export default {
         type: "direct",
         routingKey: "update_status_routing_key",
         options: {
-            durabl: true
+            durable: true
         }
     },
     EXCHANGE_NEW_RECEIVED_MESSAGE:  {

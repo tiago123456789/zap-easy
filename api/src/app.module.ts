@@ -12,6 +12,7 @@ import { NotifyThirdApplicationViaWebhookModule } from './notify-third-applicati
 import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-appliction-via-websocket/notify-third-appliction-via-websocket.module';
 import { InstanceModule } from './instance/instance.module';
 import { S3Module } from 'nestjs-s3';
+import Queue from "./common/constants/Queue"
 
 @Module({
   imports: [
@@ -41,17 +42,32 @@ import { S3Module } from 'nestjs-s3';
         return {
           exchanges: [
             {
-              name: 'update_status_instance',
-              type: 'direct'
-              // routingKey: 'update_status_routing_key',
+              name: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET_DLQ.EXCHANGE,
+              type: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET_DLQ.TYPE,
+              routingKey: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET_DLQ.ROUTING_KEY
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+              name: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK_DLQ.EXCHANGE,
+              type: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK_DLQ.TYPE,
+              routingKey: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK_DLQ.ROUTING_KEY,
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_RECEIVED_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_RECEIVED_MESSAGE')
+              name: Queue.UPDATE_STATUS_INSTANCE_DLQ.EXCHANGE,
+              type: Queue.UPDATE_STATUS_INSTANCE_DLQ.TYPE,
+              routingKey: Queue.UPDATE_STATUS_INSTANCE_DLQ.ROUTING_KEY,
+            },
+            {
+              name: Queue.UPDATE_STATUS_INSTANCE.EXCHANGE,
+              type: Queue.UPDATE_STATUS_INSTANCE.TYPE,
+              routingKey: Queue.UPDATE_STATUS_INSTANCE.ROUTING_KEY,
+            },
+            {
+              name: Queue.NEW_MESSAGE.EXCHANGE,
+              type: Queue.NEW_MESSAGE.TYPE
+            },
+            {
+              name: Queue.NEW_RECEIVED_MESSAGE.EXCHANGE,
+              type: Queue.NEW_RECEIVED_MESSAGE.TYPE
             }
           ],
           uri: configService.get("RABBIT_URI")
@@ -84,12 +100,22 @@ import { S3Module } from 'nestjs-s3';
         return {
           exchanges: [
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+              name: Queue.UPDATE_STATUS_INSTANCE_DLQ.EXCHANGE,
+              type: Queue.UPDATE_STATUS_INSTANCE_DLQ.TYPE,
+              routingKey: Queue.UPDATE_STATUS_INSTANCE_DLQ.ROUTING_KEY,
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_RECEIVED_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_RECEIVED_MESSAGE')
+              name: Queue.UPDATE_STATUS_INSTANCE.EXCHANGE,
+              type: Queue.UPDATE_STATUS_INSTANCE.TYPE,
+              routingKey: Queue.UPDATE_STATUS_INSTANCE.ROUTING_KEY,
+            },
+            {
+              name: Queue.NEW_MESSAGE.EXCHANGE,
+              type: Queue.NEW_MESSAGE.TYPE
+            },
+            {
+              name: Queue.NEW_RECEIVED_MESSAGE.EXCHANGE,
+              type: Queue.NEW_RECEIVED_MESSAGE.TYPE
             }
           ],
           uri: configService.get("RABBIT_URI")
