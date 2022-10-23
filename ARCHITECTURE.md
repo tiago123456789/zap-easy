@@ -1,7 +1,7 @@
 Architecture:
 ===============
 
-![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-zap-easy.drawio.png "Architecture the project")
+![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/architecture-zap-easy.drawio.png "Architecture the project")
 
 How to integrate your application without couple your applications with zap-easy
 =================================================================================
@@ -12,7 +12,7 @@ Case you have one application and need listen messages received, so you can one 
 
 The image below help you understand how to work the part:
 
-![integrate third application with zap-easy without use websocket or webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/integrate-third-application-uncouple-way.drawio.png "integrate third application with zap-easy without use websocket or webhook")
+![integrate third application with zap-easy without use websocket or webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/integrate-third-application-uncouple-way.drawio.png "integrate third application with zap-easy without use websocket or webhook")
 
 
 How to work the bot:
@@ -25,7 +25,7 @@ How to work the bot:
 
 The image below help you understand how to work the bot instance:
 
-![architecture the bot instance](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-the-bot-instance.png "architecture the bot instance")
+![architecture the bot instance](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/architecture-the-bot-instance.png "architecture the bot instance")
 
 
 How to work notification via webhook: 
@@ -38,7 +38,7 @@ How to work notification via webhook:
 
 The image below help you understand how to work the bot instance:
 
-![architecture to notify new message via webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/architecture-the-notify-via-webhook.png "architecture to notify new message via webhook")
+![architecture to notify new message via webhook](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/architecture-the-notify-via-webhook.png "architecture to notify new message via webhook")
 
 How to work notification via websocket: 
 ======================================
@@ -48,13 +48,13 @@ How to work notification via websocket:
 - In this case the api has a consumer waiting new message on queue, this queue is connected with the exchange named **new_received_message_exchange** so, the consumer get message and send the message via websocket to all clients conneted on websocket server.
 
 
-![architecture to notify new message via websocket](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/notify-message-via-websocket-architecture.png "architecture to notify new message via websocket")
+![architecture to notify new message via websocket](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/notify-message-via-websocket-architecture.png "architecture to notify new message via websocket")
 
 
 Why I splited the project between API and BOT?
 =============================================
 
-When I'm split because case necessary you can scale api vertically and horizontally, case I'm implemented api and bot together will impossible to scale horizontally and only option is scale vertically, but increase the resource of machine is limited.
+When I split because case necessary you can scale api vertically and horizontally, case I implemented api and bot together will impossible to scale horizontally and only option is scale vertically, but increase the resource of machine has limite.
 
 Another point is the bot part is heavy beacuse using headless browser to manipulate version web of What'sapp to send message or collect the new message to notify third application. 
 
