@@ -48,6 +48,9 @@ How to work notification via websocket:
 - In this case the api has a consumer waiting new message on queue, this queue is connected with the exchange named **new_received_message_exchange** so, the consumer get message and send the message via websocket to all clients conneted on websocket server.
 
 
+![architecture to notify new message via websocket](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/notify-message-via-websocket-architecture.png "architecture to notify new message via websocket")
+
+
 Why I splited the project between API and BOT?
 =============================================
 
