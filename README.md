@@ -60,6 +60,7 @@ Explanation the image above:
 - The api has a consumer that get message and notify via webhook and another consumer that get message and notify via websocket to all clients websocket connected.
 - Do you want consume new message received? But don't want implement webhook, don't want implement client websocket or you use language different of javascript only you need create queue any name and connect this queue to the exchange named "new_received_message_exchange" because this exchange type is fanout, so all queues connected in this exchange receive a same message. 
 
+Learn more details about the architecture here: [click here](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/ARCHITECTURE.md)
 
 Database:
 ---------------------
