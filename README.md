@@ -65,7 +65,7 @@ Learn more details about the architecture here: [click here](https://github.com/
 Database:
 ---------------------
 
-![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/database.drawio.png "Architecture the project")
+![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/documents/database.drawio.png "Architecture the project")
 
 **OBSERVATION:** the current structure of database, but can be change.
 
