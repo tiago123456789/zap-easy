@@ -1,3 +1,7 @@
+Warning:
+============
+IF YOU NEED SEND HUGE VOLUME THE MESSAGE IN SHORT PERIOD TIME I'M RECOMMEND YOU USE **OFFICAL API**. IF YOU USE THIS PROJECT ALL RESPONSABILITIES CASE OCCOUR SOMETHING IS YOUR.
+
 What's the project: 
 ====================
 
@@ -63,11 +67,6 @@ Database:
 ![architecture the project](https://github.com/tiago123456789/zap-easy/blob/feature/create-documentation/database.drawio.png "Architecture the project")
 
 **OBSERVATION:** the current structure of database, but can be change.
-
-Warning:
-----------
-IF YOU NEED SEND HUGE VOLUME THE MESSAGE IN SHORT PERIOD TIME I'M RECOMMEND YOU USE **OFFICAL API**. IF YOU USE THIS PROJECT ALL RESPONSABILITIES CASE OCCOUR SOMETHING IS YOUR.
-
 
 How to run the project locally:
 =================================
