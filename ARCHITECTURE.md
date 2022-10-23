@@ -54,7 +54,7 @@ How to work notification via websocket:
 Why I splited the project between API and BOT?
 =============================================
 
-When I'm split because case necessary you can scale api vertically and horizontally, case I'm implemented api and bot together will impossible to scale horizontally and only option is scale vertically, but increase the resource of machine is limited.
+When I split because case necessary you can scale api vertically and horizontally, case I implemented api and bot together will impossible to scale horizontally and only option is scale vertically, but increase the resource of machine has limite.
 
 Another point is the bot part is heavy beacuse using headless browser to manipulate version web of What'sapp to send message or collect the new message to notify third application. 
 
