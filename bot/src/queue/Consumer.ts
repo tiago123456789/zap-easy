@@ -47,10 +47,8 @@ export default class Consumer {
                 }
             } catch(error) {
                 if (this.hasDeadLetterQueue) {
-                    console.log("SEND MESSAGE TO DEAD LETTER QUEUE")
                     channel.nack(msg, false, false)
                 } else {
-                    console.log("REQUEUE MESSAGE IN QUEUE")
                     channel.nack(msg, false, true)
                 }
             }
