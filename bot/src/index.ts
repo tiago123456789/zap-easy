@@ -19,6 +19,7 @@ const notifyNewRecievedMessageCommand = new NotifyNewRecievedMessageCommand(
 const newMessageConsumer = new Consumer(
     App.QUEUE_NEW_MESSAGE,
     App.EXCHANGE_NEW_MESSAGE,
+    true
 )
 
 const saveQrcodeCommand = new SaveQrcodeCommand()

@@ -19,8 +19,26 @@ export default {
         routingKey: "new_message",
         options: {}
     },
+    EXCHANGE_NEW_MESSAGE_DLQ:  {
+        name: "new_message_exchange_dlq",
+        type: "direct",
+        routingKey: "new_message_dlq",
+        options: {}
+    },
+    QUEUE_NEW_MESSAGE_DLQ:  {
+        name: "new_message_dlq",
+        options: { 
+            durable: true,
+        }
+    },
     QUEUE_NEW_MESSAGE:  {
         name: "new_message",
-        options: { durable: true }
+        options: { 
+            durable: true,
+            arguments: {
+                'x-dead-letter-exchange': "new_message_exchange_dlq",
+                'x-dead-letter-routing-key': 'new_message_dlq',
+            }
+        }
     },
 }

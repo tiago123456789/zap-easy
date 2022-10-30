@@ -1,6 +1,6 @@
 export default {
     UPDATE_STATUS_INSTANCE_DLQ: {
-        EXCHANGE: 'update_status_instance_dlq',
+        EXCHANGE: 'update_status_instance_exchange_dlq',
         TYPE: "direct",
         ROUTING_KEY: 'update_status_routing_key_dlq',
         QUEUE: 'update_status_instance_queue_dlq',
