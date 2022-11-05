@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookController } from './webhook.controller';
 import { Webhook } from './webhook.entity';
 import { WebhookService } from './webhook.service';
+import Queue from "../common/constants/Queue"
 
 @Module({
     imports: [
@@ -15,9 +16,9 @@ import { WebhookService } from './webhook.service';
                 return {
                     exchanges: [
                         {
-                            name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-                            type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
-                        }
+                            name: Queue.NEW_MESSAGE.EXCHANGE,
+                            type: Queue.NEW_MESSAGE.TYPE
+                        },
                     ],
                     uri: configService.get("RABBIT_URI")
                 }

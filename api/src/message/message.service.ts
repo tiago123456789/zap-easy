@@ -10,6 +10,7 @@ import { Media } from "./entities/media.entity";
 import { TypeMessage } from "src/common/types/type-message";
 import { DocumentMessageDto } from "./dtos/document-message.dto";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
+import Queue from "../common/constants/Queue"
 
 @Injectable()
 export class MessageService {
@@ -43,8 +44,8 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
+            Queue.NEW_MESSAGE.EXCHANGE,
+            Queue.NEW_MESSAGE.ROUTING_KEY,
             { type: TypeMessage.IMAGE, ...imageMessageDto }
         )
         return messageCreated;
@@ -73,8 +74,8 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
+            Queue.NEW_MESSAGE.EXCHANGE,
+            Queue.NEW_MESSAGE.ROUTING_KEY,
             { type: TypeMessage.DOCUMENT, ...documentMessageDto }
         )
         return messageCreated;
@@ -103,8 +104,8 @@ export class MessageService {
         const messageCreated = this.repository.save(message)
 
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
+            Queue.NEW_MESSAGE.EXCHANGE,
+            Queue.NEW_MESSAGE.ROUTING_KEY,
             { type: TypeMessage.VOICE, ...audioMessageDto }
         )
         return messageCreated;
@@ -119,14 +120,11 @@ export class MessageService {
         message.sendedAt = new Date();
         const messageCreated = this.repository.save(message)
         await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
+            Queue.NEW_MESSAGE.EXCHANGE,
+            Queue.NEW_MESSAGE.ROUTING_KEY,
             { type: TypeMessage.TEXT, ...messageDto }
         )
 
         return messageCreated
     }
-
-
-
 }

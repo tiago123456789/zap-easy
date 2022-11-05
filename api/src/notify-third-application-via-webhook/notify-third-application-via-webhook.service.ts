@@ -2,8 +2,10 @@ import { NotifyThirdApplicationViaWebhook } from "./notify-third-application-via
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
+import { Nack, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import axios from "axios"
+import Queue from "../common/constants/Queue"
+
 
 @Injectable()
 export class NotifyThirdApplicationViaWebhookService {
@@ -23,14 +25,27 @@ export class NotifyThirdApplicationViaWebhookService {
     return this.repository.save(newRegister)
   }
 
-  // @RabbitSubscribe({
-  //   exchange: 'new_received_message_exchange',
-  //   routingKey: '',
-  //   queue: 'received_message_queue_to_trigger_webhook',
-  // })
-  // public async notifyNewReceivedMessage(msg: {}) {
-  //   const webhookUrl = await this.repository.findOne();
-  //   const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
-  //   await axios.post(url, msg)
-  // }
+  @RabbitSubscribe({
+    exchange: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK.EXCHANGE,
+    routingKey: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK.ROUTING_KEY,
+    queue: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK.QUEUE,
+    queueOptions: {
+      ...Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK.QUEUE_OPTIONS,
+      // @ts-ignore
+      arguments: {
+        'x-dead-letter-exchange': Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK_DLQ.EXCHANGE,
+        'x-dead-letter-routing-key': Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK_DLQ.ROUTING_KEY,
+      }
+    }
+  })
+  public async notifyNewReceivedMessage(msg: {}) {
+    try {
+      const webhookUrl = await this.repository.findOne();
+      const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
+      await axios.post(url, msg)
+    } catch(error) {
+      return new Nack(false)
+    }
+    
+  }
 }

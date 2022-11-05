@@ -1,9 +1,8 @@
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets"
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
+import { Nack, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server, Socket } from "socket.io"
-import * as jwt from "jsonwebtoken"
-import { TypeAuthCredential } from "src/common/types/type-auth-credential";
 import { AuthCredentialService } from "src/security/auth-credential.service";
+import Queue from "../common/constants/Queue"
 
 @WebSocketGateway({
     cors: {
@@ -42,18 +41,30 @@ export class NotifyThirdApplicationViaWebsocketListener {
     }
 
     @RabbitSubscribe({
-        exchange: 'new_received_message_exchange',
-        routingKey: '',
-        queue: 'received_message_queue_to_trigger_websocket',
+        exchange: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET.EXCHANGE,
+        routingKey: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET.ROUTING_KEY,
+        queue: Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET.QUEUE,
+        queueOptions: {
+            ...Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET.QUEUE_OPTIONS,
+            // @ts-ignore
+            arguments: {
+                'x-dead-letter-exchange': Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET_DLQ.EXCHANGE,
+                'x-dead-letter-routing-key': Queue.RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBSOCKET_DLQ.ROUTING_KEY,
+            }
+        }
     })
     public async notifyNewReceivedMessage(msg: { [key: string]: any }) {
-        this.server.emit("new_message", {
-            body: msg.body,
-            from: msg.from,
-            name: msg.sender.displayName,
-            base64Media: msg.base64Media,
-            mimetype: msg.mimetype
-        })
+        try {
+            this.server.emit("new_message", {
+                body: msg.body,
+                from: msg.from,
+                name: msg.sender.displayName,
+                base64Media: msg.base64Media,
+                mimetype: msg.mimetype
+            })
+        } catch(error) {
+            return new Nack(false);
+        }
     }
 
 }

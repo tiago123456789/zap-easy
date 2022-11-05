@@ -6,6 +6,7 @@ import { MessageController } from './message.controller';
 import { Message } from './entities/message.entity';
 import { MessageService } from './message.service';
 import { ConfigService } from '@nestjs/config';
+import Queue from "../common/constants/Queue"
 
 @Module({
   imports: [
@@ -16,9 +17,9 @@ import { ConfigService } from '@nestjs/config';
         return {
           exchanges: [
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
-            }
+              name: Queue.NEW_MESSAGE.EXCHANGE,
+              type: Queue.NEW_MESSAGE.TYPE
+            },
           ],
           uri: configService.get("RABBIT_URI")
         }
