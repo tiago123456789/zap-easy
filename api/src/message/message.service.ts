@@ -11,32 +11,19 @@ import { TypeMessage } from "src/common/types/type-message";
 import { DocumentMessageDto } from "./dtos/document-message.dto";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
 import Queue from "../common/constants/Queue"
-import { ResponsePaginatedDto } from "src/common/dtos/response-paginated.dto";
+import { UtilRepository } from "../common/repositories/util-repository"
 
 @Injectable()
-export class MessageService {
+export class MessageService extends UtilRepository<Message> {
 
     constructor(
-        @InjectRepository(Message) private repository: Repository<Message>,
+        @InjectRepository(Message) repository: Repository<Message>,
         private readonly amqpConnection: AmqpConnection,
         @InjectS3() private readonly s3: S3,
-    ) { }
-
-
-    async findAll(page: number | undefined, itemsPerPage: number | undefined): Promise<ResponsePaginatedDto<Message>> {
-        const skip = ( page - 1) * itemsPerPage;
-        const registers = await this.repository.findAndCount({
-            take: itemsPerPage || 2,
-            skip: skip || 0
-        });
-
-        const data = registers[0]
-        const total = registers[1]
-
-        return new ResponsePaginatedDto<Message>(
-            data, page, itemsPerPage, total
-        )
-    }
+    ) {
+        super();
+        this.repository = repository
+     }
 
     async sendImage(imageMessageDto: ImageMessageDto): Promise<Message> {
         const image = imageMessageDto.image.split("base64,")[0]

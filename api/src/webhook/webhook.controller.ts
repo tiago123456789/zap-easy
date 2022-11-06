@@ -35,7 +35,7 @@ export class WebhookController {
   })
   @Get("/")
   findAll(@Query("page") page: number, @Query("itemsPerPage") itensPerPage: number) {
-    return this.webhookService.findAll(page, itensPerPage);
+    return this.webhookService.findAllPaginate(page, itensPerPage);
   }
 
   @ApiBearerAuth("TOKEN_JWT")

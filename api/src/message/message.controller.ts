@@ -15,7 +15,7 @@ import { MessageService } from "./message.service";
     description: "Action not allowed. The request needs send jwt token in request"
 })
 @ApiTags("Messages")
-// @UseGuards(AuthorizationGuard)
+@UseGuards(AuthorizationGuard)
 @Controller("/messages")
 export class MessageController {
 
@@ -43,7 +43,7 @@ export class MessageController {
     })
     @Get("/")
     findAll(@Query("page") page: number, @Query("itemsPerPage") itensPerPage: number) {
-        return this.messageService.findAll(page, itensPerPage);
+        return this.messageService.findAllPaginate(page, itensPerPage);
     }
 
     @ApiResponse({

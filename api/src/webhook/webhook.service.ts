@@ -7,29 +7,17 @@ import { Repository } from "typeorm";
 import { CreatedWebhookDto } from "./created-webhook.dto";
 import { Webhook } from "./webhook.entity";
 import Queue from "../common/constants/Queue"
-import { ResponsePaginatedDto } from "./response-paginated.dto";
+import { UtilRepository } from "src/common/repositories/util-repository";
 
 @Injectable()
-export class WebhookService {
+export class WebhookService extends UtilRepository<Webhook> {
 
     constructor(
-        @InjectRepository(Webhook) private repository: Repository<Webhook>,
+        @InjectRepository(Webhook) repository: Repository<Webhook>,
         private amqpConnection: AmqpConnection,
-    ) { }
-
-    async findAll(page: number | undefined, itemsPerPage: number | undefined): Promise<ResponsePaginatedDto<Webhook>> {
-        const skip = ( page - 1) * itemsPerPage;
-        const registers = await this.repository.findAndCount({
-            take: itemsPerPage || 2,
-            skip: skip || 0
-        });
-
-        const data = registers[0]
-        const total = registers[1]
-
-        return new ResponsePaginatedDto<Webhook>(
-            data, page, itemsPerPage, total
-        )
+    ) { 
+        super();
+        this.repository = repository
     }
 
     async create(): Promise<CreatedWebhookDto> {
