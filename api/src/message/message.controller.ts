@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AuthorizationGuard } from "src/security/authorization.guard";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
@@ -7,6 +7,7 @@ import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
 import { Message } from "./entities/message.entity";
 import { MessageService } from "./message.service";
+import { Response } from "express"
 
 
 @ApiBearerAuth("TOKEN_JWT")
@@ -22,6 +23,37 @@ export class MessageController {
     constructor(
         private messageService: MessageService,
     ) { }
+
+    @ApiBearerAuth("TOKEN_JWT")
+    @ApiResponse({
+        status: 403,
+        description: "Action not allowed. The request needs send jwt token in request"
+    })
+    @ApiResponse({
+        status: 301,
+        description: "Redirect to media file sended on message"
+    })
+    @ApiResponse({
+        status: 404,
+        description: "Message not found or media message not found"
+    })
+    @ApiParam({
+        name: "messageId",
+        description: "The message id"
+    })
+    @ApiParam({
+        name: "mediaId",
+        description: "The media id"
+    })
+    @Get(":messageId/medias/:mediaId")
+    async accessMediaFile(
+        @Param("messageId") messageId, 
+        @Param("mediaId") mediaId,
+        @Res() response: Response
+    ) {
+        const urlSigned = await this.messageService.accessMediaFile(messageId, mediaId);
+        return response.redirect(urlSigned)
+    }
 
     @ApiBearerAuth("TOKEN_JWT")
     @ApiResponse({

@@ -31,6 +31,6 @@ export class Message {
 
   @ApiProperty({ example: Media })
   @JoinColumn()
-  @OneToOne(() => Media, (media) => media.id, { nullable: true, eager: true })
+  @OneToOne(() => Media, (media) => media.id, { nullable: true, eager: true, cascade: true })
   media: Media;
 }

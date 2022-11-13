@@ -1,5 +1,5 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectS3, S3 } from "nestjs-s3";
 import { Repository } from "typeorm";
@@ -25,12 +25,41 @@ export class MessageService extends UtilRepository<Message> {
         this.repository = repository
      }
 
+    async accessMediaFile(messageId, mediaId): Promise<string> {
+        const message = await this.repository.findOne({
+            where: {
+                id: messageId
+            }
+        })
+
+        if (!message) {
+            throw new NotFoundException("The message not found.")
+        }
+
+        if (mediaId != message.media.id) {
+            throw new NotFoundException("The message doesn't have media informed.")
+        }
+
+        let urlSplited = message.media.name.split("/")
+        let key = urlSplited[urlSplited.length - 1]
+        const urlSigned = await this.s3.getSignedUrl("getObject", {
+            Bucket: process.env.S3_BUCKET,
+            Key: key,
+            Expires: 10
+        })
+
+        return urlSigned
+    }
+
     async sendImage(imageMessageDto: ImageMessageDto): Promise<Message> {
-        const image = imageMessageDto.image.split("base64,")[0]
+        const urlBase64Splited = imageMessageDto.image.split("base64,")
+        const mimeType = urlBase64Splited[0].split(":")[1].replace(";", "")
+        const image = urlBase64Splited[0]
         const { Location: fileLink } = await this.s3.upload({
             Bucket: process.env.S3_BUCKET,
             Key: `${(new Date().getTime())}${imageMessageDto.to}`,
             Body: image,
+            ContentType: mimeType,
             ContentEncoding: "base64"
         }).promise();
 
