@@ -1,4 +1,3 @@
-// import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Provider } from 'src/common/constants/provider';

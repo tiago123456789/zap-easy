@@ -5,6 +5,9 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookController } from './webhook.controller';
 import { Webhook } from './webhook.entity';
 import { WebhookService } from './webhook.service';
+import { Provider } from 'src/common/constants/provider';
+import { WebhookRepository } from './adapters/repositories/webhook-repository';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
     imports: [
@@ -23,9 +26,16 @@ import { WebhookService } from './webhook.service';
                 }
             }
         }),
+        CommonModule
     ],
     controllers: [WebhookController],
-    providers: [WebhookService]
+    providers: [
+        WebhookService,
+        { 
+            provide: Provider.WEBHOOK_REPOSITORY,
+            useClass: WebhookRepository
+        }
+    ]
 
 })
 export class WebhookModule { }

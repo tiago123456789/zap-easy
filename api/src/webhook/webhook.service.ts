@@ -1,9 +1,9 @@
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { TypeMessage } from "src/common/types/type-message";
+import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { TextMessage } from "src/common/adapters/queue/messages/text-message";
+import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
+import { Provider } from "src/common/constants/provider";
+import { RepositoryInterface } from "src/message/adapters/repositories/repository.interface";
 import { MessageDto } from "src/message/dtos/message.dto";
-import { Repository } from "typeorm";
 import { CreatedWebhookDto } from "./created-webhook.dto";
 import { Webhook } from "./webhook.entity";
 
@@ -11,8 +11,8 @@ import { Webhook } from "./webhook.entity";
 export class WebhookService {
 
     constructor(
-        @InjectRepository(Webhook) private repository: Repository<Webhook>,
-        private amqpConnection: AmqpConnection,
+        @Inject(Provider.WEBHOOK_REPOSITORY) private repository: RepositoryInterface<Webhook>,
+        @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
     ) { }
 
     async create(): Promise<CreatedWebhookDto> {
@@ -32,10 +32,12 @@ export class WebhookService {
             throw new ForbiddenException("You can't execute this action because don't have permission")
         }
 
-        return this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
-            { type: TypeMessage.TEXT, ...message }
+        return this.queueProducer.publish(
+            {
+                routingKey: "new_message",
+                exchange: process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+            },
+            new TextMessage(message.text, message.to)
         )
     }
 
