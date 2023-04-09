@@ -7,6 +7,8 @@ import { Message } from './entities/message.entity';
 import { MessageService } from './message.service';
 import { ConfigService } from '@nestjs/config';
 import { CommonModule } from 'src/common/common.module';
+import { Provider } from 'src/common/constants/provider';
+import { MessageRepository } from './adapters/repositories/message-repository';
 
 @Module({
   imports: [
@@ -25,9 +27,15 @@ import { CommonModule } from 'src/common/common.module';
         }
       }
     }),
-    CommonModule
+    CommonModule,
   ],
   controllers: [MessageController],
-  providers: [MessageService],
+  providers: [
+    MessageService,  
+    {
+      provide: Provider.MESSAGE_REPOSITORY,
+      useClass: MessageRepository
+    },
+  ],
 })
 export class MessagesModule { }

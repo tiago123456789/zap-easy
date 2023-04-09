@@ -1,16 +1,15 @@
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { InjectS3, S3 } from "nestjs-s3";
-import { Repository } from "typeorm";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { StorageInterface } from "src/common/adapters/storage/storage.interface";
+import { Provider } from "src/common/constants/provider";
+import { RepositoryInterface } from "src/instance/adapters/repositories/repository.interface";
 import { Instance } from "./instance.entity"
 
 @Injectable()
 export class InstanceService {
 
   constructor(
-    @InjectRepository(Instance) private repository: Repository<Instance>,
-    @InjectS3() private readonly s3: S3
+    @Inject(Provider.INSTANCE_REPOSITORY) private repository: RepositoryInterface<Instance>,
+    @Inject(Provider.STORAGE) private storage: StorageInterface,
   ) { }
 
   create() {
@@ -21,18 +20,15 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
-    return this.repository.update({ id }, { 
-      updatedAt: new Date(), isOnline: modifiedData.isOnline 
-    })
+    const instance = new Instance();
+    instance.isOnline = modifiedData.isOnline;
+    instance.updatedAt = new Date();
+    return this.repository.update(id, instance)
   }
 
   async getQrcode(id) {
     await this.findById(id)
-    const url = this.s3.getSignedUrl("getObject", {
-      Bucket: process.env.S3_BUCKET,
-      Key: `${id}.png`,
-      Expires: 10
-    })
+    const url = await this.storage.getLink(`${id}.png`)
 
     return `
       <body style="background: black" >
@@ -46,13 +42,11 @@ export class InstanceService {
   }
 
   findAll(): Promise<Instance[]> {
-    return this.repository.find({})
+    return this.repository.findAll()
   }
 
   async findById(id): Promise<Instance> {
-    const register: Instance = await this.repository.findOne({
-      where: { id }
-    })
+    const register: Instance = await this.repository.findById(id)
 
     if (!register) {
       throw new NotFoundException("Instance not found")
@@ -61,15 +55,4 @@ export class InstanceService {
     return register;
   }
 
-  @RabbitSubscribe({
-    exchange: 'update_status_instance',
-    routingKey: 'update_status_routing_key',
-    queue: 'update_status_instance_queue',
-    queueOptions: {
-      durable: true
-    }
-  })
-  public async updateStatusInstance(msg: { [key: string]: any }) {
-    await this.update(msg.id, msg)
-  }
 }

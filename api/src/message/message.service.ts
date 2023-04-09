@@ -16,6 +16,7 @@ import { DocumentMessage } from "src/common/adapters/queue/messages/document-mes
 import { VoiceMessage } from "src/common/adapters/queue/messages/voice-message";
 import { TextMessage } from "src/common/adapters/queue/messages/text-message";
 import { ParamsPublish } from "src/common/adapters/queue/params-publish.interface";
+import { RepositoryInterface } from "./adapters/repositories/repository.interface";
 
 @Injectable()
 export class MessageService {
@@ -26,7 +27,7 @@ export class MessageService {
     }
 
     constructor(
-        @InjectRepository(Message) private repository: Repository<Message>,
+        @Inject(Provider.MESSAGE_REPOSITORY) private repository: RepositoryInterface<Message>,
         @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
         @Inject(Provider.STORAGE) private storage: StorageInterface,
     ) { }
