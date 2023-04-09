@@ -1,7 +1,5 @@
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { InjectS3, S3 } from "nestjs-s3";
 import { Repository } from "typeorm";
 import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
@@ -10,123 +8,131 @@ import { Media } from "./entities/media.entity";
 import { TypeMessage } from "src/common/types/type-message";
 import { DocumentMessageDto } from "./dtos/document-message.dto";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
+import { Provider } from "src/common/constants/provider";
+import { StorageInterface } from "src/common/adapters/storage/storage.interface";
+import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
+import { ImageMessage } from "src/common/adapters/queue/messages/image-message";
+import { DocumentMessage } from "src/common/adapters/queue/messages/document-message";
+import { VoiceMessage } from "src/common/adapters/queue/messages/voice-message";
+import { TextMessage } from "src/common/adapters/queue/messages/text-message";
+import { ParamsPublish } from "src/common/adapters/queue/params-publish.interface";
 
 @Injectable()
 export class MessageService {
 
+    private readonly paramsToPulishMessage: ParamsPublish = {
+        exchange: process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+        routingKey: "new_message"
+    }
+
     constructor(
         @InjectRepository(Message) private repository: Repository<Message>,
-        private readonly amqpConnection: AmqpConnection,
-        @InjectS3() private readonly s3: S3,
+        @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
+        @Inject(Provider.STORAGE) private storage: StorageInterface,
     ) { }
 
-    async sendImage(imageMessageDto: ImageMessageDto): Promise<Message> {
-        const image = imageMessageDto.image.split("base64,")[0]
-        const { Location: fileLink } = await this.s3.upload({
-            Bucket: process.env.S3_BUCKET,
-            Key: `${(new Date().getTime())}${imageMessageDto.to}`,
-            Body: image,
-            ContentEncoding: "base64"
-        }).promise();
+    private extractBase64ContentTheBase64URL(base64URL) {
+        return base64URL.split("base64,")[0]
+    }
 
-        const media: Media = new Media();
-        media.type = TypeMessage.IMAGE;
-        media.name = fileLink;
+    private async saveMessage(
+        messageDto: { [key: string]: any }, typeMessage: TypeMessage
+    ) {
+        const extractBase64TheBase64URLByTypeMessage = {
+            [TypeMessage.VOICE]: messageDto.audio,
+            [TypeMessage.DOCUMENT]: messageDto.document,
+            [TypeMessage.IMAGE]: messageDto.image
+        }
 
         const message: Message = new Message()
-        message.text = imageMessageDto.text;
-        message.to = imageMessageDto.to;
-        message.media = media;
+        message.text = messageDto.text;
+        message.to = messageDto.to;
+
+        if (typeMessage != TypeMessage.TEXT) {
+            const base64Document = this.extractBase64ContentTheBase64URL(
+                extractBase64TheBase64URLByTypeMessage[typeMessage]
+            )
+
+            const fileLink = await this.storage.upload({
+                encoding: "base64",
+                content: base64Document,
+                filename: `${(new Date().getTime())}${messageDto.to}`,
+            })
+
+            const media: Media = new Media();
+            media.type = TypeMessage.IMAGE;
+            media.name = fileLink;
+            message.media = media;
+        }
+
         message.createdAt = new Date();
         message.updatedAt = new Date();
         message.sendedAt = new Date();
-        const messageCreated = this.repository.save(message)
+        return this.repository.save(message)
+    }
 
-        await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
-            { type: TypeMessage.IMAGE, ...imageMessageDto }
+    async sendImage(imageMessageDto: ImageMessageDto): Promise<Message> {
+        const messageCreated = await this.saveMessage(
+            imageMessageDto, TypeMessage.IMAGE
+        )
+
+        await this.queueProducer.publish(
+            this.paramsToPulishMessage,
+            new ImageMessage(
+                imageMessageDto.text,
+                imageMessageDto.to,
+                imageMessageDto.image
+            )
         )
         return messageCreated;
     }
 
     async sendDocument(documentMessageDto: DocumentMessageDto): Promise<Message> {
-        const document = documentMessageDto.document.split("base64,")[0]
-        const { Location: fileLink } = await this.s3.upload({
-            Bucket: process.env.S3_BUCKET,
-            Key: `${(new Date().getTime())}${documentMessageDto.to}`,
-            Body: document,
-            ContentEncoding: "base64"
-        }).promise();
-
-        const media: Media = new Media();
-        media.type = TypeMessage.DOCUMENT;
-        media.name = fileLink;
-
-        const message: Message = new Message()
-        message.text = documentMessageDto.text;
-        message.to = documentMessageDto.to;
-        message.media = media;
-        message.createdAt = new Date();
-        message.updatedAt = new Date();
-        message.sendedAt = new Date();
-        const messageCreated = this.repository.save(message)
-
-        await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
-            { type: TypeMessage.DOCUMENT, ...documentMessageDto }
+        const messageCreated = await this.saveMessage(
+            documentMessageDto, TypeMessage.DOCUMENT
         )
+
+        await this.queueProducer.publish(
+            this.paramsToPulishMessage,
+            new DocumentMessage(
+                documentMessageDto.text,
+                documentMessageDto.to,
+                documentMessageDto.document
+            )
+        )
+
         return messageCreated;
     }
 
     async sendAudio(audioMessageDto: AudioMessageDto): Promise<Message> {
-        const audio = audioMessageDto.audio.split("base64,")[0]
-        const { Location: fileLink } = await this.s3.upload({
-            Bucket: process.env.S3_BUCKET,
-            Key: `${(new Date().getTime())}${audioMessageDto.to}`,
-            Body: audio,
-            ContentEncoding: "base64"
-        }).promise();
-
-        const media: Media = new Media();
-        media.type = TypeMessage.VOICE;
-        media.name = fileLink;
-
-        const message: Message = new Message()
-        message.text = audioMessageDto.text;
-        message.to = audioMessageDto.to;
-        message.media = media;
-        message.createdAt = new Date();
-        message.updatedAt = new Date();
-        message.sendedAt = new Date();
-        const messageCreated = this.repository.save(message)
-
-        await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
-            { type: TypeMessage.VOICE, ...audioMessageDto }
+        const messageCreated = await this.saveMessage(
+            audioMessageDto, TypeMessage.VOICE
         )
+
+        await this.queueProducer.publish(
+            this.paramsToPulishMessage,
+            new VoiceMessage(
+                audioMessageDto.text,
+                audioMessageDto.to,
+                audioMessageDto.audio
+            )
+        )
+
         return messageCreated;
     }
 
     async send(messageDto: MessageDto): Promise<Message> {
-        const message: Message = new Message()
-        message.text = messageDto.text;
-        message.to = messageDto.to;
-        message.createdAt = new Date();
-        message.updatedAt = new Date();
-        message.sendedAt = new Date();
-        const messageCreated = this.repository.save(message)
-        await this.amqpConnection.publish(
-            process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-            "new_message",
-            { type: TypeMessage.TEXT, ...messageDto }
+        const messageCreated = await this.saveMessage(
+            messageDto, TypeMessage.TEXT
+        )
+
+        await this.queueProducer.publish(
+            this.paramsToPulishMessage,
+            new TextMessage(
+                messageDto.text, messageDto.to
+            )
         )
 
         return messageCreated
     }
-
-
-
 }

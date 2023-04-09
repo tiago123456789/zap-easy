@@ -6,6 +6,7 @@ import { MessageController } from './message.controller';
 import { Message } from './entities/message.entity';
 import { MessageService } from './message.service';
 import { ConfigService } from '@nestjs/config';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConfigService } from '@nestjs/config';
         }
       }
     }),
+    CommonModule
   ],
   controllers: [MessageController],
   providers: [MessageService],

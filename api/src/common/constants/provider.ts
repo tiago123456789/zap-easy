@@ -1,5 +1,6 @@
 
 export enum Provider {
     STORAGE = "STORAGE",
-    AUTH = "AUTH"
+    AUTH = "AUTH",
+    QUEUE_PRODUCER = "QUEUE_PRODUCER"
 }
