@@ -1,15 +1,15 @@
 import { NotifyThirdApplicationViaWebhook } from "./notify-third-application-via-webhook.entity";
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import axios from "axios"
+import { Inject, Injectable } from "@nestjs/common";
+import { Provider } from "src/common/constants/provider";
+import { HttpClientInterface } from "./adapters/http-client/http-client.interface";
+import { RepositoryInterface } from "./adapters/repositories/repository.interface";
 
 @Injectable()
 export class NotifyThirdApplicationViaWebhookService {
 
   constructor(
-    @InjectRepository(NotifyThirdApplicationViaWebhook) private repository: Repository<NotifyThirdApplicationViaWebhook>,
+    @Inject(Provider.NOTIFY_THIRD_APPLICATION_VIA_WEBHOOK_REPOSITORY) private repository: RepositoryInterface<NotifyThirdApplicationViaWebhook>,
+    @Inject(Provider.HTTP_CLIENT) private httpClient: HttpClientInterface
   ) { }
 
   async create(url: string) {
@@ -23,14 +23,9 @@ export class NotifyThirdApplicationViaWebhookService {
     return this.repository.save(newRegister)
   }
 
-  // @RabbitSubscribe({
-  //   exchange: 'new_received_message_exchange',
-  //   routingKey: '',
-  //   queue: 'received_message_queue_to_trigger_webhook',
-  // })
-  // public async notifyNewReceivedMessage(msg: {}) {
-  //   const webhookUrl = await this.repository.findOne();
-  //   const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
-  //   await axios.post(url, msg)
-  // }
+  public async notifyNewReceivedMessage(msg: { [key: string ]: any }) {
+    const webhookUrl = await this.repository.findOne();
+    const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
+    return this.httpClient.post(url, msg, null)
+  }
 }
