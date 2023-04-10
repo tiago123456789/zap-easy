@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets"
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server, Socket } from "socket.io"
 import { AuthCredentialService } from "src/security/auth-credential.service";
+import { Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
 
 @WebSocketGateway({
     cors: {
@@ -38,9 +39,9 @@ export class NotifyThirdApplicationViaWebsocketListener {
     }
 
     @RabbitSubscribe({
-        exchange: 'new_received_message_exchange',
-        routingKey: '',
-        queue: 'received_message_queue_to_trigger_websocket',
+        exchange: Exchange.NEW_RECEIVED_MESSAGE,
+        routingKey: RoutingKey.NEW_RECEIVED_MESSAGE,
+        queue: Queue.NEW_RECEIVED_MESSAGE_EXCHANGE
     })
     public async notifyNewReceivedMessage(msg: { [key: string]: any }) {
         this.server.emit("new_message", {

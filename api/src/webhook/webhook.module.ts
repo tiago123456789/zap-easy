@@ -8,6 +8,7 @@ import { WebhookService } from './webhook.service';
 import { Provider } from 'src/common/constants/provider';
 import { WebhookRepository } from './adapters/repositories/webhook-repository';
 import { CommonModule } from 'src/common/common.module';
+import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
 
 @Module({
     imports: [
@@ -18,8 +19,8 @@ import { CommonModule } from 'src/common/common.module';
                 return {
                     exchanges: [
                         {
-                            name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-                            type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+                            name: Exchange.NEW_MESSAGE,
+                            type: ExchangeType.FANOUT
                         }
                     ],
                     uri: configService.get("RABBIT_URI")

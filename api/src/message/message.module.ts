@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommonModule } from 'src/common/common.module';
 import { Provider } from 'src/common/constants/provider';
 import { MessageRepository } from './adapters/repositories/message-repository';
+import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import { MessageRepository } from './adapters/repositories/message-repository';
         return {
           exchanges: [
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+              name: Exchange.NEW_MESSAGE,
+              type: ExchangeType.FANOUT
             }
           ],
           uri: configService.get("RABBIT_URI")

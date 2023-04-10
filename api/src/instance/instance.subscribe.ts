@@ -1,5 +1,6 @@
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Injectable } from "@nestjs/common";
+import { Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
 import { InstanceService } from "./instance.service";
 
 @Injectable()
@@ -10,9 +11,9 @@ export class InstanceSubscribe {
     ) {}
 
     @RabbitSubscribe({
-        exchange: 'update_status_instance',
-        routingKey: 'update_status_routing_key',
-        queue: 'update_status_instance_queue',
+        exchange: Exchange.UPDATE_STATUS,
+        routingKey: RoutingKey.UPDATE_STATUS,
+        queue: Queue.UPDATE_STATUS,
         queueOptions: {
             durable: true
         }

@@ -12,6 +12,7 @@ import { NotifyThirdApplicationViaWebhookModule } from './notify-third-applicati
 import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-appliction-via-websocket/notify-third-appliction-via-websocket.module';
 import { InstanceModule } from './instance/instance.module';
 import { S3Module } from 'nestjs-s3';
+import { Exchange, ExchangeType } from './common/constants/rabbitmq';
 
 @Module({
   imports: [
@@ -41,17 +42,16 @@ import { S3Module } from 'nestjs-s3';
         return {
           exchanges: [
             {
-              name: 'update_status_instance',
-              type: 'direct'
-              // routingKey: 'update_status_routing_key',
+              name: Exchange.UPDATE_STATUS,
+              type: ExchangeType.DIRECT
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+              name: Exchange.NEW_MESSAGE,
+              type: ExchangeType.FANOUT
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_RECEIVED_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_RECEIVED_MESSAGE')
+              name: Exchange.NEW_RECEIVED_MESSAGE,
+              type: ExchangeType.FANOUT
             }
           ],
           uri: configService.get("RABBIT_URI")

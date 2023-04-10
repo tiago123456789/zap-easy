@@ -2,6 +2,7 @@ import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nest
 import { TextMessage } from "src/common/adapters/queue/messages/text-message";
 import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
 import { Provider } from "src/common/constants/provider";
+import { Exchange, RoutingKey } from "src/common/constants/rabbitmq";
 import { RepositoryInterface } from "src/message/adapters/repositories/repository.interface";
 import { MessageDto } from "src/message/dtos/message.dto";
 import { CreatedWebhookDto } from "./created-webhook.dto";
@@ -34,8 +35,8 @@ export class WebhookService {
 
         return this.queueProducer.publish(
             {
-                routingKey: "new_message",
-                exchange: process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
+                routingKey: RoutingKey.NEW_MESSAGE,
+                exchange: Exchange.NEW_MESSAGE
             },
             new TextMessage(message.text, message.to)
         )

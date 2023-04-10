@@ -17,13 +17,14 @@ import { VoiceMessage } from "src/common/adapters/queue/messages/voice-message";
 import { TextMessage } from "src/common/adapters/queue/messages/text-message";
 import { ParamsPublish } from "src/common/adapters/queue/params-publish.interface";
 import { RepositoryInterface } from "./adapters/repositories/repository.interface";
+import { Exchange, RoutingKey } from "src/common/constants/rabbitmq";
 
 @Injectable()
 export class MessageService {
 
     private readonly paramsToPulishMessage: ParamsPublish = {
-        exchange: process.env.RABBIT_EXCHANGE_NEW_MESSAGE,
-        routingKey: "new_message"
+        exchange: Exchange.NEW_MESSAGE,
+        routingKey: RoutingKey.NEW_MESSAGE
     }
 
     constructor(
