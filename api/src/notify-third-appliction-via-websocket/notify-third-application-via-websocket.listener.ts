@@ -1,8 +1,6 @@
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets"
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server, Socket } from "socket.io"
-import * as jwt from "jsonwebtoken"
-import { TypeAuthCredential } from "src/common/types/type-auth-credential";
 import { AuthCredentialService } from "src/security/auth-credential.service";
 
 @WebSocketGateway({
@@ -16,9 +14,7 @@ export class NotifyThirdApplicationViaWebsocketListener {
 
     constructor(
         private readonly authCredentialService: AuthCredentialService
-    ) {
-
-    }
+    ) {}
 
     @WebSocketServer()
     private server: Server;

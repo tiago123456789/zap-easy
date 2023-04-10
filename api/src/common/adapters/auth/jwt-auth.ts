@@ -9,24 +9,24 @@ export class JwtAuth implements AuthInterface {
 
     constructor(
         private readonly jwtService: JwtService
-    ) {}
+    ) { }
 
     generateCredentials(params: Payload, options: OptionsAuth): string {
         return this.jwtService.sign(params, options)
     }
 
-    isValid(token: string): Boolean {
+    isValid(token: string): boolean {
         if (!token) {
             throw new Error("Token is invalid")
         }
 
         token = token.replace("Bearer ", "")
-        // @ts-ignore
-        const decodedPayload: Payload = jwt.verify(token, process.env.JWT_SECRET)
-        if (decodedPayload.type !== TypeAuthCredential.WEBSOCKET) {
-            throw new Error("Token is invalid")
+        try {
+            // @ts-ignore
+            jwt.verify(token, process.env.JWT_SECRET)
+            return true;
+        } catch (error) {
+            return false;
         }
-
-        return true;
     }
 }

@@ -1,26 +1,21 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import * as jwt from "jsonwebtoken"
+import { Provider } from "src/common/constants/provider";
+import { AuthInterface } from "src/common/adapters/auth/auth.interface";
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
 
-    canActivate(
+    constructor(
+        @Inject(Provider.AUTH) private jwtAuth: AuthInterface
+    ) {
+    }
+
+     canActivate(
         context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
         let accessToken = request.headers.authorization || "";
-        accessToken = accessToken.replace("Bearer ", "")
-
-        if (!accessToken) {
-            return false;
-        }
-
-        try {
-            jwt.verify(accessToken, process.env.JWT_SECRET)
-            return true
-        } catch (error) {
-            return false;
-        }
+        return this.jwtAuth.isValid(accessToken);
     }
 }

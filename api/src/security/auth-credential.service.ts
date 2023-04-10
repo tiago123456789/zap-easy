@@ -1,44 +1,29 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { AuthCredentialCreateDto } from "./dtos/auth-credential-create.dto";
 import { AuthCredential } from "./auth-credential.entity";
 import { AuthCredentialDto } from "./dtos/auth-credential.dto";
-import { JwtService } from "@nestjs/jwt";
 import { TypeAuthCredential } from "src/common/types/type-auth-credential";
-import * as jwt from "jsonwebtoken"
+import { Provider } from "src/common/constants/provider";
+import { JwtAuth } from "src/common/adapters/auth/jwt-auth";
+import { RepositoryInterface } from "src/security/adapters/repositories/repository.interface";
 
 @Injectable()
 export class AuthCredentialService {
 
     constructor(
-        @InjectRepository(AuthCredential) private repository: Repository<AuthCredential>,
-        private readonly jwtService: JwtService
-    ) {}
+        @Inject(Provider.AUTH_CREDENTIAL_REPOSITORY) private repository: RepositoryInterface<AuthCredential>,
+        @Inject(Provider.AUTH) private jwtAuth: JwtAuth
+    ) { }
 
     hasJwtTokenValid(token) {
-        if (!token) {
-            throw new Error("Token is invalid")
-        }
-
-        token = token.replace("Bearer ", "")
-        const decodedPayload = jwt.verify(token, process.env.JWT_SECRET)
-        // @ts-ignore
-        if (decodedPayload.type !== TypeAuthCredential.WEBSOCKET) {
-            throw new Error("Token is invalid")
-        }
-
-        return true;
+        return this.jwtAuth.isValid(token)
     }
 
     async authenticateClientWebsocket(clientId: string, clientDomain) {
-        const credentialReturned: AuthCredential = await this.repository.findOne({
-            where: {
-                clientId: clientId,
-            }
-        })
+        const credentialReturned: AuthCredential = await this.repository
+            .findByClientId(clientId);
 
-        if (!credentialReturned)  {
+        if (!credentialReturned) {
             throw new Error("Credential invalid.")
         }
 
@@ -65,11 +50,9 @@ export class AuthCredentialService {
     }
 
     async authenticate(credential: AuthCredentialDto) {
-        const credentialReturned: AuthCredential[] = await this.repository.find({
-            where: {
-                clientId: credential.clientId,
-                clientSecret: credential.clientSecret
-            }
+        const credentialReturned: AuthCredential[] = await this.repository.findByFields({
+            clientId: credential.clientId,
+            clientSecret: credential.clientSecret
         })
 
         if (credentialReturned.length == 0) {
@@ -82,6 +65,13 @@ export class AuthCredentialService {
             [TypeAuthCredential.API]: (15 * 60)
         }
         const type = credentialReturned[0].type
-        return this.jwtService.sign({ type }, { expiresIn: expirationByType[type] })
+        return this.jwtAuth.generateCredentials(
+            {
+                type
+            },
+            {
+                expiresIn: expirationByType[type]
+            }
+        )
     }
 }

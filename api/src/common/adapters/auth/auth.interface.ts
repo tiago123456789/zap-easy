@@ -3,7 +3,7 @@ import { Payload } from "./payload.interface";
 
 export interface AuthInterface {
 
-    isValid(token: string): Boolean;
+    isValid(token: string): boolean;
 
     generateCredentials(
         params: Payload, 
