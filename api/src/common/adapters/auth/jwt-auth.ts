@@ -1,5 +1,5 @@
 import { AuthInterface } from "./auth.interface";
-import jwt from "jsonwebtoken"
+import * as jwt from "jsonwebtoken"
 import { JwtService } from "@nestjs/jwt";
 import { OptionsAuth } from "./options-auth.interface";
 import { Payload } from "./payload.interface";
@@ -17,15 +17,12 @@ export class JwtAuth implements AuthInterface {
     }
 
     isValid(token: string): boolean {
-        console.log(token)
-        console.log("@@@@@@@@@@@@@")
         if (!token) {
             throw new Error("Token is invalid")
         }
 
         token = token.replace("Bearer ", "")
         try {
-            // @ts-ignore
             jwt.verify(token, process.env.JWT_SECRET)
             return true;
         } catch (error) {
