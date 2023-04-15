@@ -7,5 +7,5 @@ api/node_modules/
 api/.env
 api/dist
 
-client-websocket-example
-client-browser-websocket-example
+examples/socketio-client-frontend/node_modules/
+examples/socketio-client-backend/node_modules/

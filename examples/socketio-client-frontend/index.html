@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socketio client frontend example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.min.js" integrity="sha512-TFZqlmDYmi29UdRJTJblfxNrsSgtabj2vxvIqAvsAO2I8//OaBTMfxa8ghzuHQ58hViU5k125Cp00vh9GVgWIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <script>
+        const socket = io("http://localhost:3000?token=8ebce488-fee6-4692-9958-4817f26a2b2d", {
+            transports: ['websocket'],
+        });
+
+        socket.on("new_message", (data) => {
+            console.log(data)
+        })
+
+        socket.on("connect", () => console.log("Connected the server successfully"))
+        socket.on("disconnect", (data) => console.log(data))
+        socket.on('connect_error', err => console.log(err))
+        socket.on('connect_failed', err => console.log(err))
+        socket.on('disconnect', err => console.log(err))
+    </script>
+</body>
+
+</html>

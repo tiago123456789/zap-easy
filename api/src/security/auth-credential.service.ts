@@ -28,7 +28,8 @@ export class AuthCredentialService {
         }
 
         clientDomain = clientDomain.replace(/(http:\/\/|https:\/\/)/, "")
-        if (clientDomain != credentialReturned[0].domain) {
+        clientDomain = clientDomain.replace(/:([0-9])+/, "")
+        if (clientDomain != credentialReturned.domain) {
             throw new Error("Credential invalid.")
         }
     }

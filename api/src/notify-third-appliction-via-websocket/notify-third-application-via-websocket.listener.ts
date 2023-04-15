@@ -22,9 +22,7 @@ export class NotifyThirdApplicationViaWebsocketListener {
 
     async handleConnection(client: Socket) {
         try {
-            console.log("passed on here")
             let clientId = client.handshake.query.token
-            console.log(clientId)
             if (clientId) {
                 await this.authCredentialService.authenticateClientWebsocket(
                     // @ts-ignore
@@ -34,7 +32,6 @@ export class NotifyThirdApplicationViaWebsocketListener {
             }
 
             let token = (client.handshake.headers.authorization)
-            console.log(token)
             await this.authCredentialService.hasJwtTokenValid(token)
         } catch (error) {
             client.disconnect()
