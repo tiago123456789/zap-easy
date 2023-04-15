@@ -1,4 +1,4 @@
-import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
