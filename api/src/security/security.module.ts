@@ -13,14 +13,6 @@ import { AuthCredentialRepository } from './adapters/repositories/auth-credentia
 @Module({
     imports: [
         TypeOrmModule.forFeature([AuthCredential]),
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => {
-                return {
-                    secret: configService.get("JWT_SECRET"),
-                }
-            }
-        }),
         CommonModule
     ],
     controllers: [AuthCredentialController],

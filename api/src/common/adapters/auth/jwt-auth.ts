@@ -1,10 +1,11 @@
 import { AuthInterface } from "./auth.interface";
-import * as jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 import { JwtService } from "@nestjs/jwt";
-import { TypeAuthCredential } from "src/common/types/type-auth-credential";
 import { OptionsAuth } from "./options-auth.interface";
 import { Payload } from "./payload.interface";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class JwtAuth implements AuthInterface {
 
     constructor(
@@ -16,6 +17,8 @@ export class JwtAuth implements AuthInterface {
     }
 
     isValid(token: string): boolean {
+        console.log(token)
+        console.log("@@@@@@@@@@@@@")
         if (!token) {
             throw new Error("Token is invalid")
         }

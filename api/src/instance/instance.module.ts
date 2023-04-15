@@ -18,7 +18,8 @@ import { InstanceSubscribe } from './instance.subscribe';
         {
             provide: Provider.INSTANCE_REPOSITORY,
             useClass: InstanceRepository
-        }
+        },
+        InstanceSubscribe
     ],
     exports: [InstanceCommander, InstanceSubscribe]
 })

@@ -84,12 +84,12 @@ import { Exchange, ExchangeType } from './common/constants/rabbitmq';
         return {
           exchanges: [
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_MESSAGE')
+              name: Exchange.NEW_MESSAGE,
+              type: ExchangeType.FANOUT
             },
             {
-              name: configService.get('RABBIT_EXCHANGE_NEW_RECEIVED_MESSAGE'),
-              type: configService.get('RABBIT_EXCHANGE_TYPE_NEW_RECEIVED_MESSAGE')
+              name: Exchange.NEW_RECEIVED_MESSAGE,
+              type: ExchangeType.FANOUT
             }
           ],
           uri: configService.get("RABBIT_URI")

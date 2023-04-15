@@ -28,7 +28,7 @@ export class S3Storage implements StorageInterface {
             Expires: 10
         })
 
-        return url;
+        return Promise.resolve(url);
     }
 
 }

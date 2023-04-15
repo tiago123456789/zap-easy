@@ -9,6 +9,10 @@ export class MessageRepository implements RepositoryInterface<Message> {
         @InjectRepository(Message) private repository: Repository<Message>,
     ) { }
 
+    findOne(id: string): Promise<Message> {
+        return this.repository.findOne(id);
+    }
+
 
     save(newRegister: Message): Promise<Message> {
         return this.repository.save(newRegister)
