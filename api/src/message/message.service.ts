@@ -1,6 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
 import { Message } from "./entities/message.entity";
@@ -29,6 +27,7 @@ export class MessageService {
 
     constructor(
         @Inject(Provider.MESSAGE_REPOSITORY) private repository: RepositoryInterface<Message>,
+        @Inject(Provider.MEDIA_REPOSITORY) private mediaRepository: RepositoryInterface<Media>,
         @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
         @Inject(Provider.STORAGE) private storage: StorageInterface,
     ) { }
@@ -64,6 +63,8 @@ export class MessageService {
             const media: Media = new Media();
             media.type = TypeMessage.IMAGE;
             media.name = fileLink;
+
+            await this.mediaRepository.save(media)
             message.media = media;
         }
 

@@ -47,7 +47,7 @@ import { Exchange, ExchangeType } from './common/constants/rabbitmq';
             },
             {
               name: Exchange.NEW_MESSAGE,
-              type: ExchangeType.FANOUT
+              type: ExchangeType.DIRECT
             },
             {
               name: Exchange.NEW_RECEIVED_MESSAGE,

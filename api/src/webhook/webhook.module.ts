@@ -20,7 +20,7 @@ import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
                     exchanges: [
                         {
                             name: Exchange.NEW_MESSAGE,
-                            type: ExchangeType.FANOUT
+                            type: ExchangeType.DIRECT
                         }
                     ],
                     uri: configService.get("RABBIT_URI")

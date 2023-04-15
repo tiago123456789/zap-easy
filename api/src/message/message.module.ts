@@ -10,6 +10,7 @@ import { CommonModule } from 'src/common/common.module';
 import { Provider } from 'src/common/constants/provider';
 import { MessageRepository } from './adapters/repositories/message-repository';
 import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
+import { MediaRepository } from './adapters/repositories/media-repository';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
           exchanges: [
             {
               name: Exchange.NEW_MESSAGE,
-              type: ExchangeType.FANOUT
+              type: ExchangeType.DIRECT
             }
           ],
           uri: configService.get("RABBIT_URI")
@@ -37,6 +38,10 @@ import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
       provide: Provider.MESSAGE_REPOSITORY,
       useClass: MessageRepository
     },
+    { 
+      provide: Provider.MEDIA_REPOSITORY,
+      useClass: MediaRepository
+    }
   ],
 })
 export class MessagesModule { }

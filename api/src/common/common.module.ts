@@ -1,3 +1,4 @@
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -5,6 +6,7 @@ import { JwtAuth } from './adapters/auth/jwt-auth';
 import { RabbitmqProducer } from './adapters/queue/rabbitmq-producer';
 import { S3Storage } from './adapters/storage/s3-storage';
 import { Provider } from './constants/provider';
+import { Exchange, ExchangeType } from './constants/rabbitmq';
 
 @Module({
     imports: [
@@ -16,8 +18,22 @@ import { Provider } from './constants/provider';
                 }
             }
         }),
+        RabbitMQModule.forRootAsync(RabbitMQModule, {
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService): Promise<any> => {
+                return {
+                    exchanges: [
+                        {
+                            name: Exchange.NEW_MESSAGE,
+                            type: ExchangeType.DIRECT
+                        }
+                    ],
+                    uri: configService.get("RABBIT_URI")
+                }
+            }
+        }),
     ],
-    providers:  [
+    providers: [
         {
             provide: Provider.STORAGE,
             useClass: S3Storage
@@ -46,4 +62,4 @@ import { Provider } from './constants/provider';
         }
     ]
 })
-export class CommonModule {}
+export class CommonModule { }

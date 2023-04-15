@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Media } from "./media.entity";
 
 @Entity()
@@ -31,5 +31,6 @@ export class Message {
 
   @ApiProperty({ example: Media })
   @OneToOne(() => Media, (media) => media.id, { nullable: true })
+  @JoinColumn({ name: "media_id" })
   media: Media;
 }

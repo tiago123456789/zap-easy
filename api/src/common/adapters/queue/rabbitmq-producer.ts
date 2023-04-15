@@ -1,8 +1,10 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { Injectable } from "@nestjs/common";
 import { QueueMessage } from "./messages/queue-message.interface";
 import { ParamsPublish } from "./params-publish.interface";
 import { ProducerInterface } from "./producer.interface";
 
+@Injectable()
 export class RabbitmqProducer implements ProducerInterface {
 
     constructor(
