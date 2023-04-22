@@ -26,6 +26,10 @@ import { Exchange, ExchangeType } from './constants/rabbitmq';
                         {
                             name: Exchange.NEW_MESSAGE,
                             type: ExchangeType.DIRECT
+                        },
+                        {
+                            name: Exchange.LOGOUT_INSTANCE,
+                            type: ExchangeType.DIRECT
                         }
                     ],
                     uri: configService.get("RABBIT_URI")

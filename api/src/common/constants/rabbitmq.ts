@@ -1,5 +1,6 @@
 
 export const enum Exchange {
+    LOGOUT_INSTANCE = "logout_instance",
     UPDATE_STATUS = "update_status_instance",
     NEW_MESSAGE = "new_message",
     NEW_RECEIVED_MESSAGE = "new_received_message_exchange"
