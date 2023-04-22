@@ -1,8 +1,8 @@
 const io = require("socket.io-client");
 const axios = require("axios")
 
-const CLIENT_ID = '77948d87-67a9-4c32-9d33-ccc200cfee61'
-const CLIENT_SECRET = '5a8060eb-a17a-4d4a-b101-f312d34d7ebd'
+const CLIENT_ID = '77c5a19a-e20e-4a09-b107-6dd5bc3f7bbe'
+const CLIENT_SECRET = 'cbf387ad-7494-4ecf-ac65-de50df297742'
 const URL = 'http://localhost:3000/auth/login'
 
 async function run() {
