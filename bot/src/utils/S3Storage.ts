@@ -22,6 +22,7 @@ export default class S3Storage implements IStorage {
         contentType: string
     ): Promise<void> {
         await this.client.upload({
+            ACL: "public-read",
             // @ts-ignore
             Bucket: process.env.S3_BUCKET,
             Key: filename,

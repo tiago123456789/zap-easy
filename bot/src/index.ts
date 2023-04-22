@@ -33,10 +33,12 @@ const startApp = async () => {
     //     isOnline: false
     // })
     // const pathSession = (path.join(__dirname, "..", "tokens", sessionName))
-    // fs.rmdirSync(pathSession, { recursive: true });
+    // if (fs.existsSync(pathSession)) {
+    //     fs.rmdirSync(pathSession, { recursive: true });
+    // }
 
     create({
-        headless: false,
+        headless: true,
         session: sessionName,
         catchQR: async (base64Qrimg: string, asciiQR: string, attempt: number, urlCode?: string) => {
             await saveQrcodeCommand.execute({
@@ -47,35 +49,23 @@ const startApp = async () => {
         },
     })
         .then(async (client) => {
-            try {
-                await client.sendContactVcard("556285615483@c.us", "5511970339895@c.us", 'new contact')
-            } catch(error) {
-                console.log(error);
-            }
-            // const chats = await client.getAllChatsGroups('testando-bot@g.us');
-            // console.log(
-                // chats
-                // .filter(item => item.id.server == "g.us")
-                // .filter(item => item("g.us"))
-            // )
-            // await client.addParticipant('00000000-000000@g.us', '111111111111@c.us');
-            // setInterval(async () => {
-            //     const isOnline = await client.isConnected()
-            //     await updateStatusInstanceProcuder.publish({
-            //         id: sessionName,
-            //         isOnline
-            //     })
-            // }, (60 * 1000));
+            setInterval(async () => {
+                const isOnline = await client.isConnected()
+                await updateStatusInstanceProcuder.publish({
+                    id: sessionName,
+                    isOnline
+                })
+            }, (60 * 1000));
 
-            // client.onMessage(async (message) => {
-            //     await notifyNewRecievedMessageCommand.execute(message, client)
-            // })
+            client.onMessage(async (message) => {
+                await notifyNewRecievedMessageCommand.execute(message, client)
+            })
 
-            // newMessageConsumer
-            //     .setHandler(async (message: { [key: string]: any }) => {
-            //         await sendMessageCommand.execute(message, client)
-            //     })
-            //     .listen()
+            newMessageConsumer
+                .setHandler(async (message: { [key: string]: any }) => {
+                    await sendMessageCommand.execute(message, client)
+                })
+                .listen()
         })
         .catch(async (erro) => {
             console.log(erro);

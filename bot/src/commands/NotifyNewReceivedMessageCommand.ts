@@ -10,16 +10,24 @@ export default class NotifyNewRecievedMessageCommand implements ICommand {
     }
 
     async execute(message: { [key: string]: any; }, client: any) {
-        if (
-            message.isGroupMsg === false && 
-            (message.isMedia === true || message.isMMS === true)
-        ) {
+        if (message.mimetype) {
             const buffer = await client.decryptFile(message);
-            // @ts-ignore
             message.base64Media = buffer.toString('base64')
-            await this.receivedMessageProducer.publish(message)
-        } else if (message.isGroupMsg === false) {
-            await this.receivedMessageProducer.publish(message)
+            await this.receivedMessageProducer.publish({
+                body: null,
+                from: message.from,
+                name: message.sender.displayName,
+                base64Media: message.base64Media,
+                mimetype: message.mimetype
+            })
+        } else {
+            await this.receivedMessageProducer.publish({
+                body: message.body,
+                from: message.from,
+                name: message.sender.displayName,
+                base64Media: null,
+                mimetype: null
+            })
         }
     }
 

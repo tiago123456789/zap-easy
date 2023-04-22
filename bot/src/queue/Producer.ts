@@ -25,7 +25,6 @@ export default class Producer {
         await channel.assertExchange(
             this.exchange, this.exchangeType, this.exchangeOptions
         );
-
         return channel.publish(this.exchange, this.routingKey, Buffer.from(JSON.stringify(data)));
     }
 }
