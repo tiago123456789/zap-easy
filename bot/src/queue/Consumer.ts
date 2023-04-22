@@ -5,6 +5,7 @@ import { Queue } from './Queue';
 export default class Consumer {
 
     private handler: Function | undefined;
+    private handlerAfterAck: Function | undefined;
     private exchange: string;
     private exchangeType: string
     private exchangeOptions: { [key: string]: any }
@@ -28,6 +29,11 @@ export default class Consumer {
         return this;
     }
 
+    setHandlerAfterAck(callback: Function) {
+        this.handlerAfterAck = callback;
+        return this;
+    }
+
     async listen() {
         // @ts-ignore
         const connection = await amqp.connect(process.env.RABBIT_URI)
@@ -40,6 +46,9 @@ export default class Consumer {
                 const message = JSON.parse(msg.content.toString());
                 await this.handler!(message)
                 channel.ack(msg)
+                if (this.handlerAfterAck) {
+                    await this.handlerAfterAck!()
+                }
             }
         }, { noAck: false });
     }
