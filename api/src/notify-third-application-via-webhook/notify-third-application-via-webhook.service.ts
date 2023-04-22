@@ -24,7 +24,11 @@ export class NotifyThirdApplicationViaWebhookService {
   }
 
   public async notifyNewReceivedMessage(msg: { [key: string ]: any }) {
+    console.log(msg)
     const webhookUrl = await this.repository.findOne();
+    if (!webhookUrl) {
+      throw new Error("You need configure webhook url to receive notification the new message")
+    }
     const url: string = `${webhookUrl.url}?key=${webhookUrl.key}`
     return this.httpClient.post(url, msg, null)
   }

@@ -24,8 +24,8 @@ export class S3Storage implements StorageInterface {
         const url = this.s3.getSignedUrl("getObject", {
             // @ts-ignore
             Bucket: process.env.S3_BUCKET,
-            Key: `${filename}.png`,
-            Expires: 10
+            Key: filename,
+            Expires: 100,
         })
 
         return Promise.resolve(url);

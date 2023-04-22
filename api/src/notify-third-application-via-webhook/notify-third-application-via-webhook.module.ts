@@ -6,6 +6,7 @@ import { NotifyThirdApplicationViaWebhookRepository } from './adapters/repositor
 import { NotifyThirdApplicationViaWebhookCommand } from "./notify-third-application-via-webhook.command"
 import { NotifyThirdApplicationViaWebhook } from './notify-third-application-via-webhook.entity';
 import { NotifyThirdApplicationViaWebhookService } from './notify-third-application-via-webhook.service';
+import { NotifyThirdApplicationViaWebhookSubscribe } from './notify-third-application-via-webhook.subscribe';
 
 @Module({
     imports: [
@@ -14,6 +15,7 @@ import { NotifyThirdApplicationViaWebhookService } from './notify-third-applicat
     providers: [
         NotifyThirdApplicationViaWebhookService, 
         NotifyThirdApplicationViaWebhookCommand,
+        NotifyThirdApplicationViaWebhookSubscribe,
         {
             provide: Provider.HTTP_CLIENT,
             useClass: AxiosHttpClient

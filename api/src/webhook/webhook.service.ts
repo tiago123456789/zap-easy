@@ -18,7 +18,7 @@ export class WebhookService {
 
     async create(): Promise<CreatedWebhookDto> {
         const webhook = await this.repository.save(new Webhook());
-        const url = `${process.env.APP_URL}${webhook.id}?key=${webhook.key}`
+        const url = `${process.env.APP_URL}webhooks/${webhook.id}?key=${webhook.key}`
         return { url, ...webhook };
     }
 

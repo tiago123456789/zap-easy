@@ -61,7 +61,7 @@ export class MessageService {
             })
 
             const media: Media = new Media();
-            media.type = TypeMessage.IMAGE;
+            media.type = typeMessage;
             media.name = fileLink;
 
             await this.mediaRepository.save(media)

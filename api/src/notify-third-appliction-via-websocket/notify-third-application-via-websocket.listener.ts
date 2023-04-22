@@ -44,13 +44,7 @@ export class NotifyThirdApplicationViaWebsocketListener {
         queue: Queue.NEW_RECEIVED_MESSAGE_EXCHANGE
     })
     public async notifyNewReceivedMessage(msg: { [key: string]: any }) {
-        this.server.emit("new_message", {
-            body: msg.body,
-            from: msg.from,
-            name: msg.sender.displayName,
-            base64Media: msg.base64Media,
-            mimetype: msg.mimetype
-        })
+        this.server.emit("new_message", msg)
     }
 
 }

@@ -63,7 +63,7 @@ export class AuthCredentialService {
         const expirationByType = {
             [TypeAuthCredential.CLIENT_WEBSOCKET]: '1d',
             [TypeAuthCredential.WEBSOCKET]: "1d",
-            [TypeAuthCredential.API]: (15 * 60)
+            [TypeAuthCredential.API]: (60 * 60)
         }
         const type = credentialReturned[0].type
         return this.jwtAuth.generateCredentials(

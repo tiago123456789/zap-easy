@@ -29,7 +29,6 @@ export class InstanceService {
   async getQrcode(id) {
     await this.findById(id)
     const url = await this.storage.getLink(`${id}.png`)
-
     return `
       <body style="background: black" >
       <img src=${url} style="margin-left: 40%; margin-top: 100px" with='250px' heigth='250px'/>

@@ -14,7 +14,7 @@ export const enum RoutingKey {
 export const enum Queue {
     UPDATE_STATUS = 'update_status_instance_queue',
     RECEIVED_MESSAGE_QUEUE_TO_TRIGGER_WEBHOOK = "received_message_queue_to_trigger_webhook",
-    NEW_RECEIVED_MESSAGE_EXCHANGE = "new_received_message_exchange"
+    NEW_RECEIVED_MESSAGE_EXCHANGE = "new_received_message"
 }
 
 export const enum ExchangeType {

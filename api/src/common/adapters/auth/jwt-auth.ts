@@ -17,12 +17,12 @@ export class JwtAuth implements AuthInterface {
     }
 
     isValid(token: string): boolean {
-        if (!token) {
-            throw new Error("Token is invalid")
-        }
-
-        token = token.replace("Bearer ", "")
         try {
+            if (!token) {
+                throw new Error("Token is invalid")
+            }
+    
+            token = token.replace("Bearer ", "")
             jwt.verify(token, process.env.JWT_SECRET)
             return true;
         } catch (error) {
