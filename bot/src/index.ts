@@ -1,5 +1,4 @@
 require("dotenv").config();
-import fs from "fs"
 import path from "path";
 import { create } from 'venom-bot'
 import Consumer from './queue/Consumer';
@@ -9,8 +8,12 @@ import Producer from './queue/Producer';
 import NotifyNewRecievedMessageCommand from './commands/NotifyNewReceivedMessageCommand';
 import SaveQrcodeCommand from "./commands/SaveQrcodeCommand"
 import Instance from "./utils/Instance";
+import LogoutInstanceCommand from "./commands/LogoutInstanceCommand";
+import RemoveCredentialsInstance from "./commands/RemoveCredentialsInstance";
 
 const sendMessageCommand = new SendMessageCommand();
+const logoutInstanceCommand = new LogoutInstanceCommand();
+const removeCredentialsInstance = new RemoveCredentialsInstance();
 const updateStatusInstanceProcuder = new Producer(App.EXCHANGE_UPDATE_STATUS_INSTANCE)
 const receivedMessageProducer = new Producer(App.EXCHANGE_NEW_RECEIVED_MESSAGE)
 const notifyNewRecievedMessageCommand = new NotifyNewRecievedMessageCommand(
@@ -28,19 +31,36 @@ const startApp = async () => {
         throw new Error("You need specific instance id. For example: npm run start:dev -- innstance_id_here or pm2 start 'npm run start' --name='bot_name_here' -- instance_id_here")
     }
 
-    // await updateStatusInstanceProcuder.publish({
-    //     id: sessionName,
-    //     isOnline: false
-    // })
-    // const pathSession = (path.join(__dirname, "..", "tokens", sessionName))
-    // if (fs.existsSync(pathSession)) {
-    //     fs.rmdirSync(pathSession, { recursive: true });
-    // }
+    const logoutInstanceConsumer = new Consumer(
+        {
+            ...App.QUEUE_LOGOUT_INSTANCE,
+            name: `${App.QUEUE_LOGOUT_INSTANCE.name}${sessionName}`
+        },
+        {
+            ...App.EXCHANGE_LOGOUT_INSTANCE,
+            routingKey: sessionName
+        }
+    )
+
+    await updateStatusInstanceProcuder.publish({
+        id: sessionName,
+        isOnline: false
+    })
+    
+    const pathSession = (path.join(__dirname, "..", "tokens", sessionName))
+    removeCredentialsInstance.execute(
+        { pathSession }, 
+        null
+    )
 
     create({
         headless: true,
         session: sessionName,
         catchQR: async (base64Qrimg: string, asciiQR: string, attempt: number, urlCode?: string) => {
+            await updateStatusInstanceProcuder.publish({
+                id: sessionName,
+                isOnline: true
+            })
             await saveQrcodeCommand.execute({
                 filename: `${sessionName}.png`,
                 content: urlCode,
@@ -49,6 +69,16 @@ const startApp = async () => {
         },
     })
         .then(async (client) => {
+            logoutInstanceConsumer
+                .setHandler(async (data: any) => {})
+                .setHandlerAfterAck(() => {
+                    logoutInstanceCommand.execute(
+                        { sessionName }, 
+                        null
+                    )
+                })
+                .listen()
+
             setInterval(async () => {
                 const isOnline = await client.isConnected()
                 await updateStatusInstanceProcuder.publish({
