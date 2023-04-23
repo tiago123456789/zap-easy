@@ -2,17 +2,17 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { AuthCredentialCreateDto } from "./dtos/auth-credential-create.dto";
 import { AuthCredential } from "./auth-credential.entity";
 import { AuthCredentialDto } from "./dtos/auth-credential.dto";
-import { TypeAuthCredential } from "src/common/types/type-auth-credential";
-import { Provider } from "src/common/constants/provider";
-import { JwtAuth } from "src/common/adapters/auth/jwt-auth";
-import { RepositoryInterface } from "src/security/adapters/repositories/repository.interface";
+import { TypeAuthCredential } from "../common/types/type-auth-credential";
+import { Provider } from "../common/constants/provider";
+import { RepositoryInterface } from "../security/adapters/repositories/repository.interface";
+import { AuthInterface } from "../common/adapters/auth/auth.interface";
 
 @Injectable()
 export class AuthCredentialService {
 
     constructor(
         @Inject(Provider.AUTH_CREDENTIAL_REPOSITORY) private repository: RepositoryInterface<AuthCredential>,
-        @Inject(Provider.AUTH) private jwtAuth: JwtAuth
+        @Inject(Provider.AUTH) private jwtAuth: AuthInterface
     ) { }
 
     hasJwtTokenValid(token) {
@@ -40,7 +40,7 @@ export class AuthCredentialService {
             data.type != TypeAuthCredential.WEBSOCKET &&
             data.type != TypeAuthCredential.CLIENT_WEBSOCKET
         ) {
-            throw new BadRequestException("Type is invalid. Type valid are: bot, api and websocket")
+            throw new BadRequestException("Type is invalid. Type valid are: client websocket, api and websocket")
         }
 
         const newCredential = new AuthCredential();

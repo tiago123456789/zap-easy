@@ -5,7 +5,7 @@ import { v4 } from "uuid"
 export class AuthCredential {
 
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column('uuid')
     clientId: string;
