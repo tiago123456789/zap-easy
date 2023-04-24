@@ -3,19 +3,19 @@ import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
 import { Message } from "./entities/message.entity";
 import { Media } from "./entities/media.entity";
-import { TypeMessage } from "src/common/types/type-message";
+import { TypeMessage } from "../common/types/type-message";
 import { DocumentMessageDto } from "./dtos/document-message.dto";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
-import { Provider } from "src/common/constants/provider";
-import { StorageInterface } from "src/common/adapters/storage/storage.interface";
-import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
-import { ImageMessage } from "src/common/adapters/queue/messages/image-message";
-import { DocumentMessage } from "src/common/adapters/queue/messages/document-message";
-import { VoiceMessage } from "src/common/adapters/queue/messages/voice-message";
-import { TextMessage } from "src/common/adapters/queue/messages/text-message";
-import { ParamsPublish } from "src/common/adapters/queue/params-publish.interface";
+import { Provider } from "../common/constants/provider";
+import { StorageInterface } from "../common/adapters/storage/storage.interface";
+import { ProducerInterface } from "../common/adapters/queue/producer.interface";
+import { ImageMessage } from "../common/adapters/queue/messages/image-message";
+import { DocumentMessage } from "../common/adapters/queue/messages/document-message";
+import { VoiceMessage } from "../common/adapters/queue/messages/voice-message";
+import { TextMessage } from "../common/adapters/queue/messages/text-message";
+import { ParamsPublish } from "../common/adapters/queue/params-publish.interface";
 import { RepositoryInterface } from "./adapters/repositories/repository.interface";
-import { Exchange, RoutingKey } from "src/common/constants/rabbitmq";
+import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
 
 @Injectable()
 export class MessageService {
