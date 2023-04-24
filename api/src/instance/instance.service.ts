@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { StorageInterface } from "src/common/adapters/storage/storage.interface";
+import { StorageInterface } from "../common/adapters/storage/storage.interface";
 import { Provider } from "../common/constants/provider";
-import { RepositoryInterface } from "src/instance/adapters/repositories/repository.interface";
+import { RepositoryInterface } from "../instance/adapters/repositories/repository.interface";
 import { Instance } from "./instance.entity"
-import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
-import { LogoutMessage } from "src/common/adapters/queue/messages/logout-message";
-import { Exchange, RoutingKey } from "src/common/constants/rabbitmq";
-import { NotFoundException } from "src/common/exceptions/notfound.exception";
-import { BusinessException } from "src/common/exceptions/business.exception";
+import { ProducerInterface } from "../common/adapters/queue/producer.interface";
+import { LogoutMessage } from "../common/adapters/queue/messages/logout-message";
+import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
+import { NotFoundException } from "../common/exceptions/notfound.exception";
+import { BusinessException } from "../common/exceptions/business.exception";
 
 @Injectable()
 export class InstanceService {
