@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { TypeMessage } from "src/common/types/type-message";
+import { TypeMessage } from "../../common/types/type-message";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { v4 } from "uuid"
 

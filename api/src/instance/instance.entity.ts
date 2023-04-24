@@ -7,7 +7,7 @@ export class Instance {
 
     @ApiProperty({ example: v4() })
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @ApiProperty({ example: new Date() })
     @Column('boolean', { default: false })

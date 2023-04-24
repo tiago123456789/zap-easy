@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { StorageInterface } from "src/common/adapters/storage/storage.interface";
-import { Provider } from "src/common/constants/provider";
+import { Provider } from "../common/constants/provider";
 import { RepositoryInterface } from "src/instance/adapters/repositories/repository.interface";
 import { Instance } from "./instance.entity"
 import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
@@ -39,6 +39,7 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
+    await this.findById(id)
     const instance = new Instance();
     instance.isOnline = modifiedData.isOnline;
     instance.updatedAt = new Date();

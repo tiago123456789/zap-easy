@@ -12,7 +12,7 @@ export class NotifyThirdApplicationViaWebhookRepository
         @InjectRepository(NotifyThirdApplicationViaWebhook) private repository: Repository<NotifyThirdApplicationViaWebhook>,
     ) { }
 
-    count(): Promise<Number> {
+    count(): Promise<number> {
         return this.repository.count()
     }
 

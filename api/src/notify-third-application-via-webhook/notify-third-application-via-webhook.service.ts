@@ -1,6 +1,6 @@
 import { NotifyThirdApplicationViaWebhook } from "./notify-third-application-via-webhook.entity";
 import { Inject, Injectable } from "@nestjs/common";
-import { Provider } from "src/common/constants/provider";
+import { Provider } from "../common/constants/provider";
 import { HttpClientInterface } from "./adapters/http-client/http-client.interface";
 import { RepositoryInterface } from "./adapters/repositories/repository.interface";
 
@@ -24,7 +24,6 @@ export class NotifyThirdApplicationViaWebhookService {
   }
 
   public async notifyNewReceivedMessage(msg: { [key: string ]: any }) {
-    console.log(msg)
     const webhookUrl = await this.repository.findOne();
     if (!webhookUrl) {
       throw new Error("You need configure webhook url to receive notification the new message")
