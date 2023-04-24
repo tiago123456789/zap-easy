@@ -5,7 +5,7 @@ import { v4 } from "uuid"
 export class Webhook {
 
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column('uuid')
     key: string;

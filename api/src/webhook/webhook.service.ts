@@ -1,10 +1,10 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { TextMessage } from "src/common/adapters/queue/messages/text-message";
-import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
-import { Provider } from "src/common/constants/provider";
-import { Exchange, RoutingKey } from "src/common/constants/rabbitmq";
-import { RepositoryInterface } from "src/message/adapters/repositories/repository.interface";
-import { MessageDto } from "src/message/dtos/message.dto";
+import { TextMessage } from "../common/adapters/queue/messages/text-message";
+import { ProducerInterface } from "../common/adapters/queue/producer.interface";
+import { Provider } from "../common/constants/provider";
+import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
+import { RepositoryInterface } from "../message/adapters/repositories/repository.interface";
+import { MessageDto } from "../message/dtos/message.dto";
 import { CreatedWebhookDto } from "./created-webhook.dto";
 import { Webhook } from "./webhook.entity";
 
