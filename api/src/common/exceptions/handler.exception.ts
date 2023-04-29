@@ -2,6 +2,8 @@ import { ArgumentsHost, Catch, ExceptionFilter, ForbiddenException } from "@nest
 import { NotFoundException } from "./notfound.exception";
 import { BusinessException } from "./business.exception";
 import { ApiException } from "./api.exception";
+import { InvalidDataException } from "./invalid-data.exception";
+import { ResponseExceptionDto } from "./response-exception.dto";
 
 @Catch(Error)
 export class HandlerException implements ExceptionFilter {
@@ -9,42 +11,61 @@ export class HandlerException implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
-        if (exception instanceof NotFoundException) {
+        if (exception instanceof ApiException) {
             return response
                 // @ts-ignore
                 .status(exception.getCode())
-                .json({
-                    statusCode: exception.getCode(),
-                    timestamp: new Date().toISOString(),
-                    message: exception.message
-                });
+                .json(
+                    new ResponseExceptionDto(
+                        exception.getCode(),
+                        new Date().toISOString(),
+                        exception.message
+                    ).get()
+                );
+        } else if (exception instanceof InvalidDataException) {
+            return response
+                // @ts-ignore
+                .status(exception.getCode())
+                .json(
+                    new ResponseExceptionDto(
+                        exception.getCode(),
+                        new Date().toISOString(),
+                        exception.message
+                    ).get()
+                );
         } else if (exception instanceof BusinessException) {
             return response
                 // @ts-ignore
                 .status(exception.getCode())
-                .json({
-                    statusCode: exception.getCode(),
-                    timestamp: new Date().toISOString(),
-                    message: exception.message
-                });
+                .json(
+                    new ResponseExceptionDto(
+                        exception.getCode(),
+                        new Date().toISOString(),
+                        exception.message
+                    ).get()
+                );
         } else if (exception instanceof ForbiddenException) {
             return response
                 // @ts-ignore
                 .status(exception.getStatus())
-                .json({
-                    statusCode: exception.getStatus(),
-                    timestamp: new Date().toISOString(),
-                    message: exception.message
-                });
+                .json(
+                    new ResponseExceptionDto(
+                        exception.getStatus(),
+                        new Date().toISOString(),
+                        exception.message
+                    ).get()
+                );
         } else {
             return response
                 // @ts-ignore
                 .status(500)
-                .json({
-                    statusCode: 500,
-                    timestamp: new Date().toISOString(),
-                    message: "Internal server error"
-                });
+                .json(
+                    new ResponseExceptionDto(
+                        500,
+                        new Date().toISOString(),
+                        "Internal server error"
+                    ).get()
+                );
         }
 
     }
