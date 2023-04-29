@@ -30,4 +30,4 @@ jobs:
         if: always()
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
-          message: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
+          content: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
