@@ -2,8 +2,9 @@ name: CI(continuous integration)
 
 on:
   pull_request:
-    - master
-    - develop
+    branchs:
+      - master
+      - develop
 
 jobs:
 
