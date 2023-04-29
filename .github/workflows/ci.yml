@@ -2,7 +2,7 @@ name: CI(continuous integration)
 
 on:
   pull_request:
-    branchs:
+    branches:
       - master
       - develop
 
@@ -25,10 +25,9 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-      - name: Notify CI process
+      - name: Discord Webhook Action
+        uses: tsickert/discord-webhook@v5.3.0
         if: always()
-        uses: appleboy/discord-action@master
         with:
-          webhook_id: ${{ secrets.WEBHOOK_ID }}
-          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-          message: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          content: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
