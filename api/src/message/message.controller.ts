@@ -7,11 +7,14 @@ import { ImageMessageDto } from "./dtos/image-message.dto";
 import { MessageDto } from "./dtos/message.dto";
 import { Message } from "./entities/message.entity";
 import { MessageService } from "./message.service";
+import { ResponseTextMessageDto } from "./dtos/response-text-message.dto";
+import { ResponseExceptionDto } from "src/common/exceptions/response-exception.dto";
 
 
 @ApiBearerAuth("TOKEN_JWT")
 @ApiResponse({
     status: 403,
+    type: ResponseExceptionDto,
     description: "Action not allowed. The request needs send jwt token in request"
 })
 @ApiTags("Messages")
@@ -25,7 +28,7 @@ export class MessageController {
 
     @ApiResponse({
         status: 201,
-        type: Message,
+        type: ResponseTextMessageDto,
         description: "The text message sended successfully. WARNING: the message sending to queue to the bot consume and send message"
     })
     @Post()

@@ -4,6 +4,7 @@ import { MessageDto } from "src/message/dtos/message.dto";
 import { AuthorizationGuard } from "src/security/authorization.guard";
 import { WebhookService } from "./webhook.service";
 import { CreatedWebhookDto } from './created-webhook.dto'
+import { ResponseExceptionDto } from "src/common/exceptions/response-exception.dto";
 
 
 @ApiTags("Webhook")
@@ -17,6 +18,7 @@ export class WebhookController {
     @ApiBearerAuth("TOKEN_JWT")
     @ApiResponse({
         status: 403,
+        type: ResponseExceptionDto,
         description: "Action not allowed. The request needs send jwt token in request"
     })
     @ApiResponse({
@@ -42,6 +44,7 @@ export class WebhookController {
       })
       @ApiResponse({
         status: 403,
+        type: ResponseExceptionDto,
         description: "You try make request to the webhook url, but not specificied querystring <strong>key</strong> or <strong>key</strong> is invalid"
       })
       @ApiParam({
