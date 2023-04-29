@@ -6,7 +6,7 @@ import { TypeAuthCredential } from "../common/types/type-auth-credential";
 import { Provider } from "../common/constants/provider";
 import { RepositoryInterface } from "../security/adapters/repositories/repository.interface";
 import { AuthInterface } from "../common/adapters/auth/auth.interface";
-import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
+import { InvalidDataException } from "../common/exceptions/invalid-data.exception";
 
 @Injectable()
 export class AuthCredentialService {
