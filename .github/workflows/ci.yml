@@ -1,0 +1,33 @@
+name: CI(continuous integration)
+
+on:
+  pull_request:
+    - master
+    - develop
+
+jobs:
+
+  pipeline-ci:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - uses: actions/checkout@v2
+    
+      - name: Setting Node.js
+        uses: actions/setup-node@v2
+
+      - name: Run tests
+        run: cd api && npm install && npm run test
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Notify CI process
+        if: always()
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          message: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
