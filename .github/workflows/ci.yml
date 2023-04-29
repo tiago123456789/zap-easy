@@ -3,7 +3,7 @@ name: CI(continuous integration)
 on:
   pull_request:
     branches:
-      - master
+      - main
       - develop
 
 jobs:
@@ -24,6 +24,7 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
+        if: always()
 
       - name: Discord Webhook Action
         uses: tsickert/discord-webhook@v5.3.0

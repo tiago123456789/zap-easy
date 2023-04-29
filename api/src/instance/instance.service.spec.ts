@@ -153,4 +153,5 @@ describe("InstanceService", () => {
     await instanceService.getQrcode(fakeId)
     expect(storage.getLink).toBeCalledTimes(1)
   })
+
 })
