@@ -5,10 +5,12 @@ import { AuthorizationGuard } from "src/security/authorization.guard";
 import { Instance } from "./instance.entity";
 import { InstanceService } from "./instance.service";
 import { HandlerException } from "src/common/exceptions/handler.exception";
+import { ResponseExceptionDto } from "src/common/exceptions/response-exception.dto";
 
 @ApiBearerAuth("TOKEN_JWT")
 @ApiResponse({
     status: 403,
+    type: ResponseExceptionDto,
     description: "Action not allowed. The request needs send jwt token in request"
 })
 @ApiTags("Instances")
@@ -21,6 +23,7 @@ export class InstancesController {
         private readonly instanceService: InstanceService
     ) {}
 
+
     @ApiResponse({
         status: 200,
         isArray: true,
@@ -32,6 +35,7 @@ export class InstancesController {
         return this.instanceService.findAll();
     }
     
+
     @ApiResponse({
         status: 200,
         type: Instance,
@@ -46,6 +50,7 @@ export class InstancesController {
         return this.instanceService.findById(id)
     }
     
+
     @ApiResponse({
         status: 200,
         description: "This endpoint is responsible show you the instance qrcode. WARNING: response is html with qrcode"

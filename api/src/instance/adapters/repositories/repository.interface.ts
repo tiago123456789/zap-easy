@@ -5,5 +5,4 @@ export interface RepositoryInterface<T> {
     update(id: string, dataModified: T): Promise<T>;
     findAll(): Promise<T[]>;
     findById(id: string): Promise<T>;    
-
 }
