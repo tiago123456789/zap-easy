@@ -1,0 +1,33 @@
+name: CI(continuous integration)
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+
+  pipeline-ci:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - uses: actions/checkout@v2
+    
+      - name: Setting Node.js
+        uses: actions/setup-node@v2
+
+      - name: Run tests
+        run: cd api && npm install && npm run test
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Discord Webhook Action
+        uses: tsickert/discord-webhook@v5.3.0
+        if: always()
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          content: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
