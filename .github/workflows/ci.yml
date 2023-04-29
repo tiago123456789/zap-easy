@@ -2,7 +2,7 @@ name: CI(continuous integration)
 
 on:
   pull_request:
-    branchs:
+    branches:
       - master
       - develop
 
@@ -30,4 +30,4 @@ jobs:
         if: always()
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
-          content: "Test"
+          message: CI of branch ${{ steps.extract_branch.outputs.branch }} executed ${{ job.status }}.
