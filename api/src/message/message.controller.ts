@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, UseFilters, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AuthorizationGuard } from "src/security/authorization.guard";
 import { AudioMessageDto } from "./dtos/audio-message.dto";
@@ -9,6 +9,8 @@ import { Message } from "./entities/message.entity";
 import { MessageService } from "./message.service";
 import { ResponseTextMessageDto } from "./dtos/response-text-message.dto";
 import { ResponseExceptionDto } from "src/common/exceptions/response-exception.dto";
+import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
+import { HandlerException } from "src/common/exceptions/handler.exception";
 
 
 @ApiBearerAuth("TOKEN_JWT")
@@ -19,6 +21,7 @@ import { ResponseExceptionDto } from "src/common/exceptions/response-exception.d
 })
 @ApiTags("Messages")
 @UseGuards(AuthorizationGuard)
+@UseFilters(HandlerException)
 @Controller("/messages")
 export class MessageController {
 
@@ -35,6 +38,16 @@ export class MessageController {
     @HttpCode(201)
     public send(@Body() messageDto: MessageDto): Promise<Message> {
         return this.messageService.send(messageDto)
+    }
+
+    @ApiResponse({
+        status: 202,
+        description: "Accept request to send text message in batch successfully. WARNING: the messages sending to queue to the bot consume and send message"
+    })
+    @Post("/batch")
+    @HttpCode(202)
+    public sendTextMessagesInBatch(@Body() batchMessages: TextMessageBatchDto): Promise<void>  {
+        return this.messageService.sendTextMessagesInBatch(batchMessages)
     }
 
     @ApiResponse({

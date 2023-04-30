@@ -10,6 +10,10 @@ export class MediaRepository implements RepositoryInterface<Media> {
     constructor(
         @InjectRepository(Media) private repository: Repository<Media>,
     ) { }
+    
+    saveMany(newRegisters: Media[]): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
 
     findOne(id: string): Promise<Media> {
         return this.repository.findOne(id);
