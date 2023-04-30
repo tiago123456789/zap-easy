@@ -56,6 +56,7 @@ const startApp = async () => {
     create({
         headless: true,
         session: sessionName,
+        useChrome: false,
         catchQR: async (base64Qrimg: string, asciiQR: string, attempt: number, urlCode?: string) => {
             await updateStatusInstanceProcuder.publish({
                 id: sessionName,
