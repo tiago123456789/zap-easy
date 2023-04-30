@@ -16,6 +16,8 @@ import { TextMessage } from "../common/adapters/queue/messages/text-message";
 import { ParamsPublish } from "../common/adapters/queue/params-publish.interface";
 import { RepositoryInterface } from "./adapters/repositories/repository.interface";
 import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
+import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
+import { BusinessException } from "../common/exceptions/business.exception";
 
 @Injectable()
 export class MessageService {
@@ -123,6 +125,35 @@ export class MessageService {
 
         return messageCreated;
     }
+
+    async sendTextMessagesInBatch(batchMessages: TextMessageBatchDto): Promise<void> {
+        if (batchMessages.messages.length > 20) {
+            throw new BusinessException("The total messages you can send in batch is 20 messages.")
+        }
+
+        const messages: Message[] = [];
+        const messagesToPublish: TextMessage[] = []
+        for (let index = 0; index < batchMessages.messages.length; index += 1) {
+            const item = batchMessages.messages[index]
+            const message: Message = new Message()
+            message.text = item.text;
+            message.to = item.to;
+            message.createdAt = new Date();
+            message.updatedAt = new Date();
+            message.sendedAt = new Date();
+            messages.push(message);
+            messagesToPublish.push(
+                new TextMessage(item.text, item.to)
+            )
+        }
+
+        await this.repository.saveMany(messages)
+        return this.queueProducer.publishMany(
+            this.paramsToPulishMessage,
+            messagesToPublish
+        );
+    }
+
 
     async send(messageDto: MessageDto): Promise<Message> {
         const messageCreated = await this.saveMessage(
