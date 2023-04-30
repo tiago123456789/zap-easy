@@ -2,27 +2,54 @@ version: "3"
 
 services: 
 
+    zapeasy_api:
+      build: 
+        context: ./api
+        dockerfile: Dockerfile
+      ports:
+        - 3000:3000
+      container_name: zapeasy_api
+      networks:
+        - zapeasy
+
+    zapeasy_bot:
+      build: 
+        context: ./bot
+        dockerfile: Dockerfile
+      command: node ./build/index.js 88f527e3-0acd-44ee-b9f0-dd9386cd39c1
+      container_name: zapeasy_bot
+
     rabbitmq:
-        image: rabbitmq:3-management
-        container_name: rabbit
-        ports:
-          - 5672:5672
-          - 15672:15672
+      image: rabbitmq:3-management
+      container_name: rabbit
+      ports:
+        - 5672:5672
+        - 15672:15672
+      networks:
+        - zapeasy
 
-    # postgres:
-    #     image: postgres:9.6
-    #     restart: always
-    #     ports:
-    #         - 5432:5432
-    #     environment:
-    #         POSTGRES_PASSWORD: root
+    postgres:
+      image: postgres:14
+      restart: always
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_PASSWORD: root
+      networks:
+        - zapeasy
 
-    # pgadmin:
-    #     image: dpage/pgadmin4
-    #     environment:
-    #         PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"
-    #         PGADMIN_DEFAULT_PASSWORD: "admin"
-    #     ports:
-    #         - "16543:80"
-    #     depends_on:
-    #         - postgres
+    pgadmin:
+      image: dpage/pgadmin4
+      environment:
+        PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"
+        PGADMIN_DEFAULT_PASSWORD: "admin"
+      ports:
+        - "16543:80"
+      depends_on:
+        - postgres
+      networks:
+        - zapeasy
+
+networks:
+  zapeasy:
+    driver: bridge

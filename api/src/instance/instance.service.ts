@@ -39,7 +39,6 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
-    await this.findById(id)
     const instance = new Instance();
     instance.isOnline = modifiedData.isOnline;
     instance.updatedAt = new Date();
@@ -70,7 +69,6 @@ export class InstanceService {
 
   async findById(id): Promise<Instance> {
     const register: Instance = await this.repository.findById(id)
-
     if (!register) {
       throw new NotFoundException("Instance not found")
     }
