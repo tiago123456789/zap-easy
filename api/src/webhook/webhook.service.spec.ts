@@ -1,8 +1,8 @@
 import { WebhookService } from "./webhook.service"
 import { ProducerInterface } from "../common/adapters/queue/producer.interface";
-import { RepositoryInterface } from "../message/adapters/repositories/repository.interface";
 import { Webhook } from "./webhook.entity";
 import { MessageDto } from "../message/dtos/message.dto";
+import { RepositoryInterface } from "./adapters/repositories/repository.interface";
 
 describe("WehbookService", () => {
     let repository: jest.Mocked<RepositoryInterface<Webhook>>;
