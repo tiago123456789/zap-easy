@@ -18,7 +18,7 @@ import { RepositoryInterface } from "./adapters/repositories/repository.interfac
 import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
 import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
 import { BusinessException } from "../common/exceptions/business.exception";
-import { InstanceService } from "src/instance/instance.service";
+import { InstanceService } from "../instance/instance.service";
 
 @Injectable()
 export class MessageService {
@@ -160,7 +160,6 @@ export class MessageService {
             messagesToPublish
         );
     }
-
 
     async send(messageDto: MessageDto): Promise<Message> {
         const messageCreated = await this.saveMessage(

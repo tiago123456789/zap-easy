@@ -26,5 +26,5 @@ export class AudioMessageDto {
   @IsNotEmpty()
   audio: string;
 
-  instanceId: string;
+  instanceId?: string;
 }

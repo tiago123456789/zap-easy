@@ -26,6 +26,6 @@ export class DocumentMessageDto {
   @IsNotEmpty()
   document: string;
 
-  instanceId: string;
+  instanceId?: string;
   
 }

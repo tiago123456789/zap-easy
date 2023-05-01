@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Media } from "./media.entity";
-import { Instance } from "src/instance/instance.entity";
+import { Instance } from "../../instance/instance.entity";
 
 @Entity()
 export class Message {

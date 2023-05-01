@@ -1,17 +1,30 @@
 import { ProducerInterface } from "src/common/adapters/queue/producer.interface"
 import { RepositoryInterface } from "./adapters/repositories/repository.interface"
+import { RepositoryInterface as InstanceRepositoryInteface } 
+from "../instance/adapters/repositories/repository.interface"
+
 import { Media } from "./entities/media.entity"
 import { Message } from "./entities/message.entity"
 import { MessageService } from "./message.service"
-import { StorageInterface } from "src/common/adapters/storage/storage.interface"
+import { StorageInterface } from "../common/adapters/storage/storage.interface"
+import { InstanceService } from "../instance/instance.service"
+import { Instance } from "../instance/instance.entity"
 
 describe("MessageService", () => {
     let repository: jest.Mocked<RepositoryInterface<Message>>;
     let mediaRepository: jest.Mocked<RepositoryInterface<Media>>;
     let queueProducer: jest.Mocked<ProducerInterface>;
     let storage: jest.Mocked<StorageInterface>;
+    let instanceRepository: jest.Mocked<InstanceRepositoryInteface<Instance>>;
+    let instanceService: InstanceService;
 
     beforeEach(() => {
+        instanceRepository = {
+            save: jest.fn(),
+            update: jest.fn(),
+            findAll: jest.fn(),
+            findById: jest.fn() 
+        };
         repository = {
             findOne: jest.fn(),
             save: jest.fn(),
@@ -29,17 +42,22 @@ describe("MessageService", () => {
         storage = {
             upload: jest.fn(),
             getLink: jest.fn()
-        }
+        };
+        instanceService = new InstanceService(
+            instanceRepository,
+            storage,
+            queueProducer
+        );
     })
 
     it("Should be send text message success", async () => {
-
-
+        
         const messageService = new MessageService(
             repository,
             mediaRepository,
             queueProducer,
-            storage
+            storage,
+            instanceService
         )
 
         await messageService.send({
@@ -59,8 +77,10 @@ describe("MessageService", () => {
             repository,
             mediaRepository,
             queueProducer,
-            storage
+            storage,
+            instanceService
         )
+
 
         await messageService.sendImage({
             to: "556185615483",
@@ -82,7 +102,8 @@ describe("MessageService", () => {
             repository,
             mediaRepository,
             queueProducer,
-            storage
+            storage,
+            instanceService
         )
 
         await messageService.sendAudio({
@@ -104,8 +125,10 @@ describe("MessageService", () => {
             repository,
             mediaRepository,
             queueProducer,
-            storage
+            storage,
+            instanceService
         )
+
 
         await messageService.sendDocument({
             to: "556185615483",
@@ -125,9 +148,10 @@ describe("MessageService", () => {
                 repository,
                 mediaRepository,
                 queueProducer,
-                storage
+                storage,
+                instanceService
             )
-
+    
             await messageService.sendTextMessagesInBatch({
                 messages: Array(30).fill({
                     to: "556185615483",
@@ -145,8 +169,10 @@ describe("MessageService", () => {
             repository,
             mediaRepository,
             queueProducer,
-            storage
+            storage,
+            instanceService
         )
+
 
         await messageService.sendTextMessagesInBatch({
             messages: Array(10).fill({

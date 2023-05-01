@@ -18,5 +18,5 @@ export class MessageDto {
   @Length(12, 14)
   to: string;
 
-  instanceId: string;
+  instanceId?: string;
 }
