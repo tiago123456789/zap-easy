@@ -18,8 +18,9 @@ export class InstanceService {
     @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
   ) { }
 
-  create() {
+  create(name: string) {
     const instance = new Instance();
+    instance.name = name;
     instance.createdAt = new Date();
     instance.updatedAt = new Date();
     return this.repository.save(instance)

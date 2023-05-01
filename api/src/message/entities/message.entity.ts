@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Media } from "./media.entity";
+import { Instance } from "src/instance/instance.entity";
 
 @Entity()
 export class Message {
@@ -33,4 +34,8 @@ export class Message {
   @OneToOne(() => Media, (media) => media.id, { nullable: true })
   @JoinColumn({ name: "media_id" })
   media: Media;
+
+  @ManyToOne(() => Instance, (instance) => instance.id, { nullable: true })
+  @JoinColumn({ name: "instance_id" })
+  instance: Instance
 }

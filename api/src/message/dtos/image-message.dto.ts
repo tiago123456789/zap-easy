@@ -24,5 +24,7 @@ export class ImageMessageDto {
   })
   @IsNotEmpty()
   image: string;
+
+  instanceId;
   
 }

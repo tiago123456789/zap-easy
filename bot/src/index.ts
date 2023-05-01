@@ -42,6 +42,17 @@ const startApp = async () => {
         }
     )
 
+    const newMessageToInstanceConsumer = new Consumer(
+        {
+            ...App.QUEUE_NEW_MESSAGE,
+            name: `${App.QUEUE_NEW_MESSAGE.name}_${sessionName}`
+        },
+        {
+            ...App.EXCHANGE_NEW_MESSAGE,
+            routingKey: sessionName
+        }   
+    )
+
     await updateStatusInstanceProcuder.publish({
         id: sessionName,
         isOnline: false
@@ -93,6 +104,12 @@ const startApp = async () => {
             })
 
             newMessageConsumer
+                .setHandler(async (message: { [key: string]: any }) => {
+                    await sendMessageCommand.execute(message, client)
+                })
+                .listen()
+
+            newMessageToInstanceConsumer
                 .setHandler(async (message: { [key: string]: any }) => {
                     await sendMessageCommand.execute(message, client)
                 })

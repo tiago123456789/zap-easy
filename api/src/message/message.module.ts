@@ -11,6 +11,7 @@ import { Provider } from 'src/common/constants/provider';
 import { MessageRepository } from './adapters/repositories/message-repository';
 import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
 import { MediaRepository } from './adapters/repositories/media-repository';
+import { InstanceModule } from 'src/instance/instance.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { MediaRepository } from './adapters/repositories/media-repository';
       }
     }),
     CommonModule,
+    InstanceModule
   ],
   controllers: [MessageController],
   providers: [
