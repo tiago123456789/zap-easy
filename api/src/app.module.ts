@@ -13,9 +13,11 @@ import { NotifyThirdApplicationViaWebsocketModule } from './notify-third-applict
 import { InstanceModule } from './instance/instance.module';
 import { S3Module } from 'nestjs-s3';
 import { Exchange, ExchangeType } from './common/constants/rabbitmq';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true
     }),
