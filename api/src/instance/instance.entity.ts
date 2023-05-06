@@ -9,6 +9,9 @@ export class Instance {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @Column({ type: "varchar", length: 170 })
+    name: string;
+
     @ApiProperty({ example: new Date() })
     @Column('boolean', { default: false })
     isOnline: boolean;

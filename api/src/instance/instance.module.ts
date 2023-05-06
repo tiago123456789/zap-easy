@@ -21,6 +21,6 @@ import { InstanceSubscribe } from './instance.subscribe';
         },
         InstanceSubscribe
     ],
-    exports: [InstanceCommander, InstanceSubscribe]
+    exports: [InstanceCommander, InstanceSubscribe, InstanceService]
 })
 export class InstanceModule {}

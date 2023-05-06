@@ -44,6 +44,7 @@ describe("InstanceService", () => {
   it("Should be get instance success", async () => {
     const instance = new Instance();
     instance.id = fakeId;
+    instance.name = "Fake test"
     instance.isOnline = false;
     instance.createdAt = new Date();
     instance.updatedAt = new Date();
@@ -66,7 +67,7 @@ describe("InstanceService", () => {
       repository, storage, queueProducer
     );
 
-    await instanceService.create();
+    await instanceService.create("fake support");
     expect(repository.save).toHaveBeenCalledTimes(1)
   })
 
