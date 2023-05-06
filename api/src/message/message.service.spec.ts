@@ -9,9 +9,11 @@ import { MessageService } from "./message.service"
 import { StorageInterface } from "../common/adapters/storage/storage.interface"
 import { InstanceService } from "../instance/instance.service"
 import { Instance } from "../instance/instance.entity"
+import { ScheduleMessage } from "./entities/schedule-message.entity"
 
 describe("MessageService", () => {
     let repository: jest.Mocked<RepositoryInterface<Message>>;
+    let scheduleMessageRepository: jest.Mocked<RepositoryInterface<ScheduleMessage>>;
     let mediaRepository: jest.Mocked<RepositoryInterface<Media>>;
     let queueProducer: jest.Mocked<ProducerInterface>;
     let storage: jest.Mocked<StorageInterface>;
@@ -32,11 +34,22 @@ describe("MessageService", () => {
             findById: jest.fn()
         };
         repository = {
+            findAllByFilters: jest.fn(),
+            updateMany: jest.fn(),
             findOne: jest.fn(),
             save: jest.fn(),
             saveMany: jest.fn()
         };
+        scheduleMessageRepository = {
+            findAllByFilters: jest.fn(),
+            updateMany: jest.fn(),
+            findOne: jest.fn(),
+            save: jest.fn(),
+            saveMany: jest.fn()
+        }
         mediaRepository = {
+            findAllByFilters: jest.fn(),
+            updateMany: jest.fn(),
             findOne: jest.fn(),
             save: jest.fn(),
             saveMany: jest.fn()
@@ -63,7 +76,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         await messageService.send({
@@ -82,7 +96,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -104,7 +119,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         await messageService.sendImage({
@@ -125,7 +141,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -149,7 +166,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         await messageService.sendAudio({
@@ -170,7 +188,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -194,7 +213,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
 
@@ -216,7 +236,8 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -241,7 +262,8 @@ describe("MessageService", () => {
                 mediaRepository,
                 queueProducer,
                 storage,
-                instanceService
+                instanceService,
+                scheduleMessageRepository
             )
 
             await messageService.sendTextMessagesInBatch({
@@ -262,9 +284,9 @@ describe("MessageService", () => {
             mediaRepository,
             queueProducer,
             storage,
-            instanceService
+            instanceService,
+            scheduleMessageRepository
         )
-
 
         await messageService.sendTextMessagesInBatch({
             messages: Array(10).fill({
@@ -275,5 +297,93 @@ describe("MessageService", () => {
 
         expect(repository.saveMany).toBeCalled()
         expect(queueProducer.publishMany).toBeCalled()
+    })
+
+    it("Should be trigger scheduled message, but send nothing because don't have message to send", async () => {
+        const messageService = new MessageService(
+            repository,
+            mediaRepository,
+            queueProducer,
+            storage,
+            instanceService,
+            scheduleMessageRepository
+        )
+
+        scheduleMessageRepository.findAllByFilters.mockResolvedValue([])
+        await messageService.triggerScheduledMessages();
+
+        expect(scheduleMessageRepository.findAllByFilters).toBeCalled()
+        expect(queueProducer.publish).toBeCalledTimes(0)
+        expect(scheduleMessageRepository.updateMany).toBeCalledTimes(0)
+    })
+
+    it("Should be trigger a scheduled message, because have 1 message to trigger", async () => {
+        const messageService = new MessageService(
+            repository,
+            mediaRepository,
+            queueProducer,
+            storage,
+            instanceService,
+            scheduleMessageRepository
+        );
+
+        const fakeMessage = new Message();
+        fakeMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d'
+        fakeMessage.media = null
+        fakeMessage.createdAt = new Date();
+        fakeMessage.updatedAt = new Date();
+        fakeMessage.sendedAt = new Date();
+        fakeMessage.text = "fake message";
+        fakeMessage.to = '5562911111111'
+
+        const fakeScheduleMessage = new ScheduleMessage()
+        fakeScheduleMessage.hasProcessed = false;
+        fakeScheduleMessage.scheduledAt = new Date();
+        fakeScheduleMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d';
+        fakeScheduleMessage.message = fakeMessage
+
+        scheduleMessageRepository.findAllByFilters.mockResolvedValue([
+            fakeScheduleMessage
+        ])
+        await messageService.triggerScheduledMessages();
+
+        expect(scheduleMessageRepository.findAllByFilters).toBeCalled()
+        expect(queueProducer.publish).toBeCalledTimes(1)
+        expect(scheduleMessageRepository.updateMany).toBeCalledTimes(1)
+    })
+
+    it("Should be trigger a scheduled message, because have 2 message to trigger", async () => {
+        const messageService = new MessageService(
+            repository,
+            mediaRepository,
+            queueProducer,
+            storage,
+            instanceService,
+            scheduleMessageRepository
+        );
+
+        const fakeMessage = new Message();
+        fakeMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d'
+        fakeMessage.media = null
+        fakeMessage.createdAt = new Date();
+        fakeMessage.updatedAt = new Date();
+        fakeMessage.sendedAt = new Date();
+        fakeMessage.text = "fake message";
+        fakeMessage.to = '5562911111111'
+
+        const fakeScheduleMessage = new ScheduleMessage()
+        fakeScheduleMessage.hasProcessed = false;
+        fakeScheduleMessage.scheduledAt = new Date();
+        fakeScheduleMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d';
+        fakeScheduleMessage.message = fakeMessage
+
+        scheduleMessageRepository.findAllByFilters.mockResolvedValue([
+            fakeScheduleMessage, fakeScheduleMessage
+        ])
+        await messageService.triggerScheduledMessages();
+
+        expect(scheduleMessageRepository.findAllByFilters).toBeCalled()
+        expect(queueProducer.publish).toBeCalledTimes(2)
+        expect(scheduleMessageRepository.updateMany).toBeCalledTimes(1)
     })
 })
