@@ -3,12 +3,19 @@ import { HttpClientInterface } from "./adapters/http-client/http-client.interfac
 import { RepositoryInterface } from "./adapters/repositories/repository.interface"
 import { NotifyThirdApplicationViaWebhook } from "./notify-third-application-via-webhook.entity"
 import { NotifyThirdApplicationViaWebhookService } from "./notify-third-application-via-webhook.service"
+import { LoggerInterface } from "src/common/adapters/logger/logger.interface"
 
 describe("NotifyThirdApplicationViaWebhookService", () => {
   let repository: jest.Mocked<RepositoryInterface<NotifyThirdApplicationViaWebhook>>;
   let httpClient: jest.Mocked<HttpClientInterface>;
+  let logger: jest.Mocked<LoggerInterface>;
+
 
   beforeEach(() => {
+    logger = {
+      info: jest.fn(),
+      error: jest.fn()
+    }
     repository = {
       findOne: jest.fn(),
       save: jest.fn(),
@@ -25,7 +32,8 @@ describe("NotifyThirdApplicationViaWebhookService", () => {
     async () => {
       try {
         const notifyThirdApplicationViaWebhookService = new NotifyThirdApplicationViaWebhookService(
-          repository, httpClient
+          repository, httpClient,
+          logger
         )
 
         const fakeUrl = "http://example.com.br"
@@ -40,7 +48,7 @@ describe("NotifyThirdApplicationViaWebhookService", () => {
     "Should be create new webhook url success",
     async () => {
       const notifyThirdApplicationViaWebhookService = new NotifyThirdApplicationViaWebhookService(
-        repository, httpClient
+        repository, httpClient, logger
       )
 
       const fakeUrl = "http://example.com.br"
@@ -54,7 +62,7 @@ describe("NotifyThirdApplicationViaWebhookService", () => {
     async () => {
       try {
         const notifyThirdApplicationViaWebhookService = new NotifyThirdApplicationViaWebhookService(
-          repository, httpClient
+          repository, httpClient, logger
         )
 
         repository.findOne.mockResolvedValue(null)
@@ -72,7 +80,7 @@ describe("NotifyThirdApplicationViaWebhookService", () => {
         notifyThird.key = '332bdfc1-605c-4bba-ac76-412f707071ac';
 
         const notifyThirdApplicationViaWebhookService = new NotifyThirdApplicationViaWebhookService(
-          repository, httpClient
+          repository, httpClient, logger
         )
 
         repository.findOne.mockResolvedValue(notifyThird)
