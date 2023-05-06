@@ -3,7 +3,7 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { MessageService } from "./message.service";
 
 @Injectable()
-export class MessageSubscribe {
+export class MessageScheduler {
 
     constructor(private messageService: MessageService) {}
 

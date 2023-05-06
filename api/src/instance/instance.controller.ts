@@ -15,7 +15,7 @@ import { ResponseExceptionDto } from "src/common/exceptions/response-exception.d
 })
 @ApiTags("Instances")
 @UseGuards(AuthorizationGuard)
-@UseFilters(new HandlerException())
+@UseFilters(HandlerException)
 @Controller("instances")
 export class InstancesController {
 

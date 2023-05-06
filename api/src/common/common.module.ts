@@ -7,6 +7,9 @@ import { RabbitmqProducer } from './adapters/queue/rabbitmq-producer';
 import { S3Storage } from './adapters/storage/s3-storage';
 import { Provider } from './constants/provider';
 import { Exchange, ExchangeType } from './constants/rabbitmq';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import { WinstonLogger } from './adapters/logger/winston-logger';
 
 @Module({
     imports: [
@@ -36,6 +39,21 @@ import { Exchange, ExchangeType } from './constants/rabbitmq';
                 }
             }
         }),
+        WinstonModule.forRootAsync({
+            useFactory: () => {
+                return {
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    ),
+                    defaultMeta: { service: 'api' },
+                    transports: [
+                        new winston.transports.File({ dirname: 'logs', filename: 'error.log', level: 'error' }),
+                        new winston.transports.File({ dirname: 'logs', filename: 'info.log', level: "info" }),
+                    ],
+                }
+            }
+        })
     ],
     providers: [
         {
@@ -49,6 +67,10 @@ import { Exchange, ExchangeType } from './constants/rabbitmq';
         {
             provide: Provider.QUEUE_PRODUCER,
             useClass: RabbitmqProducer
+        },
+        {
+            provide: Provider.LOGGER,
+            useClass: WinstonLogger
         }
     ],
     exports: [
@@ -63,6 +85,10 @@ import { Exchange, ExchangeType } from './constants/rabbitmq';
         {
             provide: Provider.QUEUE_PRODUCER,
             useClass: RabbitmqProducer
+        },
+        {
+            provide: Provider.LOGGER,
+            useClass: WinstonLogger
         }
     ]
 })

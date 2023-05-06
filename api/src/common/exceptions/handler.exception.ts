@@ -1,12 +1,19 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, ForbiddenException } from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, ForbiddenException, Inject } from "@nestjs/common";
 import { NotFoundException } from "./notfound.exception";
 import { BusinessException } from "./business.exception";
 import { ApiException } from "./api.exception";
 import { InvalidDataException } from "./invalid-data.exception";
 import { ResponseExceptionDto } from "./response-exception.dto";
+import { LoggerInterface } from "../adapters/logger/logger.interface";
+import { Provider } from "../constants/provider";
 
 @Catch(Error)
 export class HandlerException implements ExceptionFilter {
+
+    constructor(    
+        @Inject(Provider.LOGGER) private logger: LoggerInterface
+    ) {}
+
     catch(exception: Error, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
@@ -69,6 +76,7 @@ export class HandlerException implements ExceptionFilter {
                     ).get()
                 });
         } else {
+            this.logger.error(exception);
             return response
                 // @ts-ignore
                 .status(500)

@@ -7,10 +7,12 @@ import { NotifyThirdApplicationViaWebhookCommand } from "./notify-third-applicat
 import { NotifyThirdApplicationViaWebhook } from './notify-third-application-via-webhook.entity';
 import { NotifyThirdApplicationViaWebhookService } from './notify-third-application-via-webhook.service';
 import { NotifyThirdApplicationViaWebhookSubscribe } from './notify-third-application-via-webhook.subscribe';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([NotifyThirdApplicationViaWebhook]),
+        CommonModule
     ],
     providers: [
         NotifyThirdApplicationViaWebhookService, 
