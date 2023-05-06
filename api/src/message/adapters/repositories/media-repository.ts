@@ -10,6 +10,14 @@ export class MediaRepository implements RepositoryInterface<Media> {
     constructor(
         @InjectRepository(Media) private repository: Repository<Media>,
     ) { }
+
+    updateMany(ids: string[], modifiedData: Media): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    
+    findAllByFilters(filters: Media): Promise<Media[]> {
+        throw new Error("Method not implemented.");
+    }
     
     saveMany(newRegisters: Media[]): Promise<any> {
         throw new Error("Method not implemented.");
@@ -18,7 +26,6 @@ export class MediaRepository implements RepositoryInterface<Media> {
     findOne(id: string): Promise<Media> {
         return this.repository.findOne(id);
     }
-
 
     save(newRegister: Media): Promise<Media> {
         return this.repository.save(newRegister)

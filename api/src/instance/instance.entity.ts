@@ -9,7 +9,7 @@ export class Instance {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: "varchar", length: 170 })
+    @Column({ type: "varchar", length: 170, nullable: true })
     name: string;
 
     @ApiProperty({ example: new Date() })

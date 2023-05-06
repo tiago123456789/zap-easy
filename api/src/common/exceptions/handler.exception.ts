@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, ForbiddenException } from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, ForbiddenException } from "@nestjs/common";
 import { NotFoundException } from "./notfound.exception";
 import { BusinessException } from "./business.exception";
 import { ApiException } from "./api.exception";
@@ -55,6 +55,19 @@ export class HandlerException implements ExceptionFilter {
                         exception.message
                     ).get()
                 );
+        } else if (exception instanceof BadRequestException) {
+            const validationError: { [key: string]: any } = exception.getResponse() as object
+            return response
+                // @ts-ignore
+                .status(exception.getStatus())
+                .json({
+                    error: validationError.message,
+                    ...new ResponseExceptionDto(
+                        exception.getStatus(),
+                        new Date().toISOString(),
+                        exception.message
+                    ).get()
+                });
         } else {
             return response
                 // @ts-ignore
