@@ -10,6 +10,7 @@ import { StorageInterface } from "../common/adapters/storage/storage.interface"
 import { InstanceService } from "../instance/instance.service"
 import { Instance } from "../instance/instance.entity"
 import { ScheduleMessage } from "./entities/schedule-message.entity"
+import { LoggerInterface } from "src/common/adapters/logger/logger.interface"
 
 describe("MessageService", () => {
     let repository: jest.Mocked<RepositoryInterface<Message>>;
@@ -18,6 +19,8 @@ describe("MessageService", () => {
     let queueProducer: jest.Mocked<ProducerInterface>;
     let storage: jest.Mocked<StorageInterface>;
     let instanceRepository: jest.Mocked<InstanceRepositoryInteface<Instance>>;
+    let logger: jest.Mocked<LoggerInterface>;
+
     let instanceService: InstanceService;
     const instance = new Instance();
     instance.id = 'b5847af0-74ed-416a-a85c-c20a804031fa';
@@ -43,6 +46,10 @@ describe("MessageService", () => {
     fakeScheduleMessage.message = fakeMessage
 
     beforeEach(() => {
+        logger = {
+            info: jest.fn(),
+            error: jest.fn()
+        }
         instanceRepository = {
             save: jest.fn(),
             update: jest.fn(),
@@ -81,7 +88,8 @@ describe("MessageService", () => {
         instanceService = new InstanceService(
             instanceRepository,
             storage,
-            queueProducer
+            queueProducer,
+            logger
         );
     })
 
@@ -93,7 +101,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         await messageService.send({
@@ -113,7 +122,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -136,7 +146,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         await messageService.sendImage({
@@ -158,7 +169,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -183,7 +195,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         await messageService.sendAudio({
@@ -205,7 +218,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -230,7 +244,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
 
@@ -253,7 +268,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         instanceRepository.findById.mockResolvedValue(instance)
@@ -279,7 +295,8 @@ describe("MessageService", () => {
                 queueProducer,
                 storage,
                 instanceService,
-                scheduleMessageRepository
+                scheduleMessageRepository,
+                logger
             )
 
             await messageService.sendTextMessagesInBatch({
@@ -301,7 +318,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         await messageService.sendTextMessagesInBatch({
@@ -322,7 +340,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         )
 
         scheduleMessageRepository.findAllByFilters.mockResolvedValue([])
@@ -340,7 +359,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         );
 
         scheduleMessageRepository.findAllByFilters.mockResolvedValue([
@@ -360,7 +380,8 @@ describe("MessageService", () => {
             queueProducer,
             storage,
             instanceService,
-            scheduleMessageRepository
+            scheduleMessageRepository,
+            logger
         );
 
         scheduleMessageRepository.findAllByFilters.mockResolvedValue([

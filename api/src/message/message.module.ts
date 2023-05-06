@@ -14,7 +14,7 @@ import { MediaRepository } from './adapters/repositories/media-repository';
 import { InstanceModule } from 'src/instance/instance.module';
 import { ScheduleMessageRepository } from './adapters/repositories/schedule-message-repository';
 import { ScheduleMessage } from './entities/schedule-message.entity';
-import { MessageSubscribe } from './message.subscribe';
+import { MessageScheduler } from './message.scheduler';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ import { MessageSubscribe } from './message.subscribe';
       provide: Provider.SCHEDULE_MESSAGE_REPOSITORY,
       useClass: ScheduleMessageRepository
     },
-    MessageSubscribe
+    MessageScheduler
   ],
 })
 export class MessagesModule { }

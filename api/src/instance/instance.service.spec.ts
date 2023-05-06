@@ -3,15 +3,22 @@ import { InstanceService } from "./instance.service"
 import { RepositoryInterface } from "src/instance/adapters/repositories/repository.interface";
 import { StorageInterface } from "src/common/adapters/storage/storage.interface";
 import { ProducerInterface } from "src/common/adapters/queue/producer.interface";
+import { LoggerInterface } from "src/common/adapters/logger/logger.interface";
 
 describe("InstanceService", () => {
   let repository: jest.Mocked<RepositoryInterface<Instance>>;
   let storage: jest.Mocked<StorageInterface>;  
   let queueProducer: jest.Mocked<ProducerInterface>;
+  let logger: jest.Mocked<LoggerInterface>;
+
 
   const fakeId = 'e5e49bd4-9ab9-459a-86cb-c3597e3d7f85'
 
   beforeEach(() => {
+    logger = {
+      info: jest.fn(),
+      error: jest.fn()
+    }
     repository = {
       save: jest.fn(),
       update: jest.fn(),
@@ -26,12 +33,13 @@ describe("InstanceService", () => {
       publish: jest.fn(),
       publishMany: jest.fn()
     };
+
   })
 
   it("Should be throw exception when try get instance not exist", async () => {
     try {
       const instanceService = new InstanceService(
-        repository, storage, queueProducer
+        repository, storage, queueProducer, logger
       );
 
       repository.findById.mockReturnValue(null)
@@ -50,7 +58,7 @@ describe("InstanceService", () => {
     instance.updatedAt = new Date();
 
     const instanceService = new InstanceService(
-      repository, storage, queueProducer
+      repository, storage, queueProducer, logger
     );
 
     repository.findById.mockResolvedValue(instance)
@@ -64,7 +72,7 @@ describe("InstanceService", () => {
 
   it("Should be create instance success", async () => {
     const instanceService = new InstanceService(
-      repository, storage, queueProducer
+      repository, storage, queueProducer, logger
     );
 
     await instanceService.create("fake support");
@@ -74,7 +82,7 @@ describe("InstanceService", () => {
   it("Should be throw exception when try update instance data, but not exist", async () => {
     try {
       const instanceService = new InstanceService(
-        repository, storage, queueProducer
+        repository, storage, queueProducer, logger
       );
 
       repository.findById.mockReturnValue(null)
@@ -92,7 +100,7 @@ describe("InstanceService", () => {
     instance.updatedAt = new Date();
 
     const instanceService = new InstanceService(
-      repository, storage, queueProducer
+      repository, storage, queueProducer, logger
     );
 
     repository.findById.mockResolvedValue(instance)
@@ -113,7 +121,7 @@ describe("InstanceService", () => {
     instance.updatedAt = new Date();
 
     const instanceService = new InstanceService(
-      repository, storage, queueProducer
+      repository, storage, queueProducer, logger
     );
 
     repository.findAll.mockResolvedValue([instance, instance])
@@ -129,7 +137,7 @@ describe("InstanceService", () => {
   it("Should be throw exception when try get qrcode instance, but not exist", async () => {
     try {
       const instanceService = new InstanceService(
-        repository, storage, queueProducer
+        repository, storage, queueProducer, logger
       );
 
       repository.findById.mockReturnValue(null)
@@ -147,7 +155,7 @@ describe("InstanceService", () => {
     instance.updatedAt = new Date();
 
     const instanceService = new InstanceService(
-      repository, storage, queueProducer
+      repository, storage, queueProducer, logger
     );
 
     repository.findById.mockResolvedValue(instance)

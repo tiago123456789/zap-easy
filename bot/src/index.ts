@@ -58,11 +58,11 @@ const startApp = async () => {
         isOnline: false
     })
     
-    const pathSession = (path.join(__dirname, "..", "tokens", sessionName))
-    removeCredentialsInstance.execute(
-        { pathSession }, 
-        null
-    )
+    // const pathSession = (path.join(__dirname, "..", "tokens", sessionName))
+    // removeCredentialsInstance.execute(
+    //     { pathSession }, 
+    //     null
+    // )
 
     create({
         headless: true,
