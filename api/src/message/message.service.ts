@@ -19,6 +19,8 @@ import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
 import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
 import { BusinessException } from "../common/exceptions/business.exception";
 import { InstanceService } from "../instance/instance.service";
+import { ScheduleMessageDto } from "./dtos/schedule-message.dto";
+import { ScheduleMessage } from "./entities/schedule-message.entity";
 
 @Injectable()
 export class MessageService {
@@ -33,7 +35,8 @@ export class MessageService {
         @Inject(Provider.MEDIA_REPOSITORY) private mediaRepository: RepositoryInterface<Media>,
         @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
         @Inject(Provider.STORAGE) private storage: StorageInterface,
-        private instanceService: InstanceService
+        private instanceService: InstanceService,
+        @Inject(Provider.SCHEDULE_MESSAGE_REPOSITORY) private scheduleMessageRepository: RepositoryInterface<ScheduleMessage>,
     ) { }
 
     private extractBase64ContentTheBase64URL(base64URL) {
@@ -174,6 +177,70 @@ export class MessageService {
         )
 
         return messageCreated
+    }
+
+    async schedule(scheduleMessageDto: ScheduleMessageDto) {
+        const message: Message = await this.saveMessage(
+            scheduleMessageDto, TypeMessage.TEXT
+        );
+
+        const scheduleMessage = new ScheduleMessage()
+        scheduleMessage.hasProcessed = false;
+        scheduleMessage.scheduledAt = scheduleMessageDto.scheduledAt;
+        scheduleMessage.message = message
+        
+        return this.scheduleMessageRepository.save(scheduleMessage)
+    }
+
+    async triggerScheduledMessages() {
+        const scheduleMessage = new ScheduleMessage();
+        scheduleMessage.hasProcessed = false
+        const messagesToTrigger = await this.scheduleMessageRepository.findAllByFilters(
+            scheduleMessage
+        );
+
+        if (messagesToTrigger.length === 0) {
+            return;
+        }
+
+        const scheduleMessageIds: string[] = [];
+        const messages: Message[] = [];
+        for (let index = 0; index < messagesToTrigger.length; index += 1) {
+            scheduleMessageIds.push(messagesToTrigger[index].id)
+            messages.push(messagesToTrigger[index].message)
+        }
+
+        let messagesToPublishPromise = [];
+        for (let index = 0; index < messages.length; index += 1) {
+            const message = messages[index];
+        
+            if (messagesToPublishPromise.length === 4) {
+                await Promise.all(messagesToPublishPromise);
+                messagesToPublishPromise = []
+            }
+
+            let instanceId = null;
+            if (message.instance && message.instance.id) {
+                instanceId = message.instance.id
+            }
+
+            messagesToPublishPromise.push(
+                this.queueProducer.publish(
+                    this.getParamsToPublishMessage(instanceId),
+                    new TextMessage(message.text, message.to)
+                )
+            )
+        }
+
+        if (messagesToPublishPromise.length > 0) {
+            await Promise.all(messagesToPublishPromise);
+            messagesToPublishPromise = []
+        }
+
+        scheduleMessage.hasProcessed = true
+        await this.scheduleMessageRepository.updateMany(
+            scheduleMessageIds, scheduleMessage
+        )
     }
 
     private getParamsToPublishMessage(instanceId: string | null) {

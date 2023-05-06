@@ -8,7 +8,7 @@ export class Message {
   
   @ApiProperty({ example: "e1039fe8-2852-4579-86b5-7dd1322e33e6" })
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ApiProperty({ example: "Hello world" })
   @Column('text')
@@ -31,11 +31,11 @@ export class Message {
   to: string;
 
   @ApiProperty({ example: Media })
-  @OneToOne(() => Media, (media) => media.id, { nullable: true })
+  @OneToOne(() => Media, (media) => media.id, { nullable: true, eager: true })
   @JoinColumn({ name: "media_id" })
   media: Media;
 
-  @ManyToOne(() => Instance, (instance) => instance.id, { nullable: true })
+  @ManyToOne(() => Instance, (instance) => instance.id, { nullable: true, eager: true })
   @JoinColumn({ name: "instance_id" })
   instance: Instance
 }
