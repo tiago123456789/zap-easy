@@ -21,6 +21,7 @@ import { BusinessException } from "../common/exceptions/business.exception";
 import { InstanceService } from "../instance/instance.service";
 import { ScheduleMessageDto } from "./dtos/schedule-message.dto";
 import { ScheduleMessage } from "./entities/schedule-message.entity";
+import { LoggerInterface } from "src/common/adapters/logger/logger.interface";
 
 @Injectable()
 export class MessageService {
@@ -37,6 +38,7 @@ export class MessageService {
         @Inject(Provider.STORAGE) private storage: StorageInterface,
         private instanceService: InstanceService,
         @Inject(Provider.SCHEDULE_MESSAGE_REPOSITORY) private scheduleMessageRepository: RepositoryInterface<ScheduleMessage>,
+        @Inject(Provider.LOGGER) private logger: LoggerInterface
     ) { }
 
     private extractBase64ContentTheBase64URL(base64URL) {
@@ -193,54 +195,67 @@ export class MessageService {
     }
 
     async triggerScheduledMessages() {
-        const scheduleMessage = new ScheduleMessage();
-        scheduleMessage.hasProcessed = false
-        const messagesToTrigger = await this.scheduleMessageRepository.findAllByFilters(
-            scheduleMessage
-        );
-
-        if (messagesToTrigger.length === 0) {
-            return;
-        }
-
-        const scheduleMessageIds: string[] = [];
-        const messages: Message[] = [];
-        for (let index = 0; index < messagesToTrigger.length; index += 1) {
-            scheduleMessageIds.push(messagesToTrigger[index].id)
-            messages.push(messagesToTrigger[index].message)
-        }
-
-        let messagesToPublishPromise = [];
-        for (let index = 0; index < messages.length; index += 1) {
-            const message = messages[index];
-        
-            if (messagesToPublishPromise.length === 4) {
+        try {
+            this.logger.info(`Starting process to send scheduled message`)
+            const scheduleMessage = new ScheduleMessage();
+            scheduleMessage.hasProcessed = false
+            this.logger.info(`Getting scheduled message to send`)
+            const messagesToTrigger = await this.scheduleMessageRepository.findAllByFilters(
+                scheduleMessage
+            );
+    
+            if (messagesToTrigger.length === 0) {
+                this.logger.info(`Finished here because don't have scheduled message to send`)
+                return;
+            }
+    
+            const scheduleMessageIds: string[] = [];
+            const messages: Message[] = [];
+            for (let index = 0; index < messagesToTrigger.length; index += 1) {
+                scheduleMessageIds.push(messagesToTrigger[index].id)
+                messages.push(messagesToTrigger[index].message)
+            }
+    
+            this.logger.info(`Sending scheduled message to queue`)
+            let messagesToPublishPromise = [];
+            for (let index = 0; index < messages.length; index += 1) {
+                const message = messages[index];
+            
+                if (messagesToPublishPromise.length === 4) {
+                    await Promise.all(messagesToPublishPromise);
+                    messagesToPublishPromise = []
+                }
+    
+                let instanceId = null;
+                if (message.instance && message.instance.id) {
+                    instanceId = message.instance.id
+                }
+    
+                messagesToPublishPromise.push(
+                    this.queueProducer.publish(
+                        this.getParamsToPublishMessage(instanceId),
+                        new TextMessage(message.text, message.to)
+                    )
+                )
+            }
+    
+            if (messagesToPublishPromise.length > 0) {
                 await Promise.all(messagesToPublishPromise);
                 messagesToPublishPromise = []
             }
-
-            let instanceId = null;
-            if (message.instance && message.instance.id) {
-                instanceId = message.instance.id
-            }
-
-            messagesToPublishPromise.push(
-                this.queueProducer.publish(
-                    this.getParamsToPublishMessage(instanceId),
-                    new TextMessage(message.text, message.to)
-                )
+    
+            this.logger.info(`Sended scheduled message to queue`)
+            scheduleMessage.hasProcessed = true;
+            this.logger.info(`Updating scheduled message to hasProcess equal true`)
+            await this.scheduleMessageRepository.updateMany(
+                scheduleMessageIds, scheduleMessage
             )
+            this.logger.info(`Updated scheduled message to hasProcess equal true`)
+            this.logger.info(`Finished process to send scheduled message`)
+        } catch(error) {
+            this.logger.error(error)
+            throw error;
         }
-
-        if (messagesToPublishPromise.length > 0) {
-            await Promise.all(messagesToPublishPromise);
-            messagesToPublishPromise = []
-        }
-
-        scheduleMessage.hasProcessed = true
-        await this.scheduleMessageRepository.updateMany(
-            scheduleMessageIds, scheduleMessage
-        )
     }
 
     private getParamsToPublishMessage(instanceId: string | null) {

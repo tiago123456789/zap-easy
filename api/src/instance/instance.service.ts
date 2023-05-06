@@ -8,6 +8,7 @@ import { LogoutMessage } from "../common/adapters/queue/messages/logout-message"
 import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
 import { NotFoundException } from "../common/exceptions/notfound.exception";
 import { BusinessException } from "../common/exceptions/business.exception";
+import { LoggerInterface } from "src/common/adapters/logger/logger.interface";
 
 @Injectable()
 export class InstanceService {
@@ -16,6 +17,7 @@ export class InstanceService {
     @Inject(Provider.INSTANCE_REPOSITORY) private repository: RepositoryInterface<Instance>,
     @Inject(Provider.STORAGE) private storage: StorageInterface,
     @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
+    @Inject(Provider.LOGGER) private logger: LoggerInterface
   ) { }
 
   create(name: string) {
@@ -40,13 +42,21 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
-    const instance = await this.repository.findById(id)
-    if (!instance) {
-      return;
+    try {
+      this.logger.info(`Updating instance with id ${id}`)
+      const instance = await this.repository.findById(id)
+      if (!instance) {
+        return;
+      }
+      instance.isOnline = modifiedData.isOnline;
+      instance.updatedAt = new Date();
+      const instanceUpdated: Instance = await this.repository.update(id, instance)
+      this.logger.info(`Updated instance with id ${id}`)
+      return instanceUpdated
+    } catch(error) {
+      this.logger.error(error);
+      throw error;
     }
-    instance.isOnline = modifiedData.isOnline;
-    instance.updatedAt = new Date();
-    return this.repository.update(id, instance)
   }
 
   async getQrcode(id) {
