@@ -42,11 +42,11 @@ export class MessageController {
     }
 
     @ApiResponse({
-        status: 202,
+        status: 201,
         description: "Accept request to send text message in batch successfully. WARNING: the messages sending to queue to the bot consume and send message"
     })
     @Post("/batch")
-    @HttpCode(202)
+    @HttpCode(201)
     public sendTextMessagesInBatch(@Body() batchMessages: TextMessageBatchDto): Promise<void>  {
         return this.messageService.sendTextMessagesInBatch(batchMessages)
     }
@@ -84,9 +84,14 @@ export class MessageController {
         return this.messageService.sendAudio(audioMessageDto)
     }
 
+    @ApiResponse({
+        status: 201,
+        type: ScheduleMessageDto,
+        description: "Schedule message success"
+    })
     @Post("/schedule")
     @HttpCode(201)
-    public schedule(@Body() scheduleMessageDto: ScheduleMessageDto) {
-        return this.messageService.schedule(scheduleMessageDto);
+    public async schedule(@Body() scheduleMessageDto: ScheduleMessageDto): Promise<void> {
+        await this.messageService.schedule(scheduleMessageDto);
     }
 }
