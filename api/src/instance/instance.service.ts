@@ -40,7 +40,10 @@ export class InstanceService {
   }
 
   async update(id, modifiedData) {
-    const instance = new Instance();
+    const instance = await this.repository.findById(id)
+    if (!instance) {
+      return;
+    }
     instance.isOnline = modifiedData.isOnline;
     instance.updatedAt = new Date();
     return this.repository.update(id, instance)

@@ -11,6 +11,7 @@ import { ResponseTextMessageDto } from "./dtos/response-text-message.dto";
 import { ResponseExceptionDto } from "src/common/exceptions/response-exception.dto";
 import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
 import { HandlerException } from "src/common/exceptions/handler.exception";
+import { ScheduleMessageDto } from "./dtos/schedule-message.dto";
 
 
 @ApiBearerAuth("TOKEN_JWT")
@@ -81,5 +82,11 @@ export class MessageController {
     @HttpCode(201)
     public sendAudio(@Body() audioMessageDto: AudioMessageDto) {
         return this.messageService.sendAudio(audioMessageDto)
+    }
+
+    @Post("/schedule")
+    @HttpCode(201)
+    public schedule(@Body() scheduleMessageDto: ScheduleMessageDto) {
+        return this.messageService.schedule(scheduleMessageDto);
     }
 }

@@ -12,10 +12,13 @@ import { MessageRepository } from './adapters/repositories/message-repository';
 import { Exchange, ExchangeType } from 'src/common/constants/rabbitmq';
 import { MediaRepository } from './adapters/repositories/media-repository';
 import { InstanceModule } from 'src/instance/instance.module';
+import { ScheduleMessageRepository } from './adapters/repositories/schedule-message-repository';
+import { ScheduleMessage } from './entities/schedule-message.entity';
+import { MessageSubscribe } from './message.subscribe';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Message, Media]),
+    TypeOrmModule.forFeature([Message, Media, ScheduleMessage]),
     RabbitMQModule.forRootAsync(RabbitMQModule, {
       inject: [ConfigService],
       useFactory: async (configService: ConfigService): Promise<any> => {
@@ -43,7 +46,12 @@ import { InstanceModule } from 'src/instance/instance.module';
     { 
       provide: Provider.MEDIA_REPOSITORY,
       useClass: MediaRepository
-    }
+    },
+    {
+      provide: Provider.SCHEDULE_MESSAGE_REPOSITORY,
+      useClass: ScheduleMessageRepository
+    },
+    MessageSubscribe
   ],
 })
 export class MessagesModule { }
