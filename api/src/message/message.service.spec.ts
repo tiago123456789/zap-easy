@@ -26,6 +26,22 @@ describe("MessageService", () => {
     instance.updatedAt = new Date();
     instance.createdAt = new Date();
 
+
+    const fakeMessage = new Message();
+    fakeMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d'
+    fakeMessage.media = null
+    fakeMessage.createdAt = new Date();
+    fakeMessage.updatedAt = new Date();
+    fakeMessage.sendedAt = new Date();
+    fakeMessage.text = "fake message";
+    fakeMessage.to = '5562911111111'
+
+    const fakeScheduleMessage = new ScheduleMessage()
+    fakeScheduleMessage.hasProcessed = false;
+    fakeScheduleMessage.scheduledAt = new Date();
+    fakeScheduleMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d';
+    fakeScheduleMessage.message = fakeMessage
+
     beforeEach(() => {
         instanceRepository = {
             save: jest.fn(),
@@ -327,21 +343,6 @@ describe("MessageService", () => {
             scheduleMessageRepository
         );
 
-        const fakeMessage = new Message();
-        fakeMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d'
-        fakeMessage.media = null
-        fakeMessage.createdAt = new Date();
-        fakeMessage.updatedAt = new Date();
-        fakeMessage.sendedAt = new Date();
-        fakeMessage.text = "fake message";
-        fakeMessage.to = '5562911111111'
-
-        const fakeScheduleMessage = new ScheduleMessage()
-        fakeScheduleMessage.hasProcessed = false;
-        fakeScheduleMessage.scheduledAt = new Date();
-        fakeScheduleMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d';
-        fakeScheduleMessage.message = fakeMessage
-
         scheduleMessageRepository.findAllByFilters.mockResolvedValue([
             fakeScheduleMessage
         ])
@@ -361,21 +362,6 @@ describe("MessageService", () => {
             instanceService,
             scheduleMessageRepository
         );
-
-        const fakeMessage = new Message();
-        fakeMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d'
-        fakeMessage.media = null
-        fakeMessage.createdAt = new Date();
-        fakeMessage.updatedAt = new Date();
-        fakeMessage.sendedAt = new Date();
-        fakeMessage.text = "fake message";
-        fakeMessage.to = '5562911111111'
-
-        const fakeScheduleMessage = new ScheduleMessage()
-        fakeScheduleMessage.hasProcessed = false;
-        fakeScheduleMessage.scheduledAt = new Date();
-        fakeScheduleMessage.id = 'dd7c4065-98ac-4173-baf1-612e0989be3d';
-        fakeScheduleMessage.message = fakeMessage
 
         scheduleMessageRepository.findAllByFilters.mockResolvedValue([
             fakeScheduleMessage, fakeScheduleMessage
