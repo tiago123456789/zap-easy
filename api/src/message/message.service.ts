@@ -18,11 +18,12 @@ import { RepositoryInterface } from "./adapters/repositories/repository.interfac
 import { Exchange, RoutingKey } from "../common/constants/rabbitmq";
 import { TextMessageBatchDto } from "./dtos/text-message-batch.dto";
 import { BusinessException } from "../common/exceptions/business.exception";
+import { InstanceService } from "../instance/instance.service";
 
 @Injectable()
 export class MessageService {
 
-    private readonly paramsToPulishMessage: ParamsPublish = {
+    private paramsToPulishMessage: ParamsPublish = {
         exchange: Exchange.NEW_MESSAGE,
         routingKey: RoutingKey.NEW_MESSAGE
     }
@@ -32,6 +33,7 @@ export class MessageService {
         @Inject(Provider.MEDIA_REPOSITORY) private mediaRepository: RepositoryInterface<Media>,
         @Inject(Provider.QUEUE_PRODUCER) private queueProducer: ProducerInterface,
         @Inject(Provider.STORAGE) private storage: StorageInterface,
+        private instanceService: InstanceService
     ) { }
 
     private extractBase64ContentTheBase64URL(base64URL) {
@@ -70,6 +72,11 @@ export class MessageService {
             message.media = media;
         }
 
+        if (messageDto.instanceId) {
+            const instance = await this.instanceService.findById(messageDto.instanceId)
+            message.instance = instance;
+        }
+
         message.createdAt = new Date();
         message.updatedAt = new Date();
         message.sendedAt = new Date();
@@ -82,7 +89,7 @@ export class MessageService {
         )
 
         await this.queueProducer.publish(
-            this.paramsToPulishMessage,
+            this.getParamsToPublishMessage(imageMessageDto.instanceId),
             new ImageMessage(
                 imageMessageDto.text,
                 imageMessageDto.to,
@@ -98,7 +105,7 @@ export class MessageService {
         )
 
         await this.queueProducer.publish(
-            this.paramsToPulishMessage,
+            this.getParamsToPublishMessage(documentMessageDto.instanceId),
             new DocumentMessage(
                 documentMessageDto.text,
                 documentMessageDto.to,
@@ -115,7 +122,7 @@ export class MessageService {
         )
 
         await this.queueProducer.publish(
-            this.paramsToPulishMessage,
+            this.getParamsToPublishMessage(audioMessageDto.instanceId),
             new VoiceMessage(
                 audioMessageDto.text,
                 audioMessageDto.to,
@@ -154,19 +161,34 @@ export class MessageService {
         );
     }
 
-
     async send(messageDto: MessageDto): Promise<Message> {
         const messageCreated = await this.saveMessage(
             messageDto, TypeMessage.TEXT
         )
 
         await this.queueProducer.publish(
-            this.paramsToPulishMessage,
+            this.getParamsToPublishMessage(messageDto.instanceId),
             new TextMessage(
                 messageDto.text, messageDto.to
             )
         )
 
         return messageCreated
+    }
+
+    private getParamsToPublishMessage(instanceId: string | null) {
+        const paramsDefaultToPublishMessage: ParamsPublish = {
+            exchange: Exchange.NEW_MESSAGE,
+            routingKey: RoutingKey.NEW_MESSAGE
+        }
+
+        if (!instanceId) {
+            return paramsDefaultToPublishMessage
+        }
+
+        return {
+            exchange: Exchange.NEW_MESSAGE,
+            routingKey: instanceId
+        }
     }
 }

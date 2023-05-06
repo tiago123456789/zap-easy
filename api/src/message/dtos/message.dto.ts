@@ -17,4 +17,6 @@ export class MessageDto {
   @IsNotEmpty()
   @Length(12, 14)
   to: string;
+
+  instanceId?: string;
 }
