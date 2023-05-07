@@ -21,7 +21,8 @@
     "node-schedule": "^2.1.0",
     "qr-image": "^3.2.0",
     "venom-bot": "^4.3.7",
-    "whatsapp-web.js": "^1.16.7"
+    "whatsapp-web.js": "^1.16.7",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@types/node-schedule": "^2.1.0",
