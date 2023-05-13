@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "pm2 start ./build/index.js --name='bot' -- 61348845-6a2c-4eb5-b5fe-e1f93081d492",
+    "start": "pm2 start ./build/index.js --name='bot' -- a1db8364-965c-4edb-86fd-cd118bf493f7",
     "start:dev": "nodemon  --watch './src/**/*.ts' --ignore './src/**/*.spec.ts' --exec 'ts-node' ./src/index.ts"
   },
   "keywords": [],
