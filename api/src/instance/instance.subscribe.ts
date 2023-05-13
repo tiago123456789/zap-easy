@@ -1,6 +1,6 @@
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
+import { Nack, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Injectable } from "@nestjs/common";
-import { Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
+import { DeadLetterOptions, Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
 import { InstanceService } from "./instance.service";
 
 @Injectable()
@@ -15,10 +15,17 @@ export class InstanceSubscribe {
         routingKey: RoutingKey.UPDATE_STATUS,
         queue: Queue.UPDATE_STATUS,
         queueOptions: {
-            durable: true
+            durable: true,
+            // @ts-ignore
+            deadLetterExchange: DeadLetterOptions.EXCHANGE,
+            deadLetterRoutingKey: DeadLetterOptions.ROUTING_KEY
         }
     })
     public async updateStatusInstance(msg: { [key: string]: any }) {
-        await this.instanceService.update(msg.id, msg)
+        try {
+            await this.instanceService.update(msg.id, msg)
+        } catch(error) {
+            new Nack(false)
+        }
     }
 }

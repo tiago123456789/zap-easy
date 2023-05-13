@@ -1,8 +1,8 @@
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets"
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
+import { Nack, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server, Socket } from "socket.io"
 import { AuthCredentialService } from "src/security/auth-credential.service";
-import { Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
+import { DeadLetterOptions, Exchange, Queue, RoutingKey } from "src/common/constants/rabbitmq";
 
 @WebSocketGateway({
     cors: {
@@ -15,7 +15,7 @@ export class NotifyThirdApplicationViaWebsocketListener {
 
     constructor(
         private readonly authCredentialService: AuthCredentialService
-    ) {}
+    ) { }
 
     @WebSocketServer()
     private server: Server;
@@ -41,10 +41,19 @@ export class NotifyThirdApplicationViaWebsocketListener {
     @RabbitSubscribe({
         exchange: Exchange.NEW_RECEIVED_MESSAGE,
         routingKey: RoutingKey.NEW_RECEIVED_MESSAGE,
-        queue: Queue.NEW_RECEIVED_MESSAGE_EXCHANGE
+        queue: Queue.NEW_RECEIVED_MESSAGE_EXCHANGE,
+        queueOptions: {
+            // @ts-ignore
+            deadLetterExchange: DeadLetterOptions.EXCHANGE,
+            deadLetterRoutingKey: DeadLetterOptions.ROUTING_KEY
+        }
     })
     public async notifyNewReceivedMessage(msg: { [key: string]: any }) {
-        this.server.emit("new_message", msg)
+        try {
+            this.server.emit("new_message", msg)
+        } catch (error) {
+            new Nack(false)
+        }
     }
 
 }

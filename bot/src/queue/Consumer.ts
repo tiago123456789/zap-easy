@@ -43,11 +43,15 @@ export default class Consumer {
         await channel.bindQueue(q.queue, this.exchange, this.routingKey);
         channel.consume(q.queue, async (msg: any) => {
             if (msg.content) {
-                const message = JSON.parse(msg.content.toString());
-                await this.handler!(message)
-                channel.ack(msg)
-                if (this.handlerAfterAck) {
-                    await this.handlerAfterAck!()
+                try {
+                    const message = JSON.parse(msg.content.toString());
+                    await this.handler!(message)
+                    channel.ack(msg)
+                    if (this.handlerAfterAck) {
+                        await this.handlerAfterAck!()
+                    }
+                } catch(error) {
+                    channel.reject(msg, false)
                 }
             }
         }, { noAck: false });

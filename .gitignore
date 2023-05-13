@@ -7,5 +7,7 @@ api/node_modules/
 api/.env
 api/dist
 
+bot/logs/
+
 examples/socketio-client-frontend/node_modules/
 examples/socketio-client-backend/node_modules/

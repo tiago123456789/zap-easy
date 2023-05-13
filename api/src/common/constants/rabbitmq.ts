@@ -22,3 +22,8 @@ export const enum ExchangeType {
     DIRECT = "direct",
     FANOUT = "fanout",
 }
+
+export const DeadLetterOptions = {
+    EXCHANGE: "dead_letter_exchange",
+    ROUTING_KEY: ""
+}
