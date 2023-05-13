@@ -29,10 +29,18 @@ export default {
     },
     QUEUE_NEW_MESSAGE:  {
         name: "new_message",
-        options: { durable: true }
+        options: { 
+            durable: true,
+            deadLetterExchange: "dead_letter_exchange", 
+            deadLetterRoutingKey: ""
+        }
     },
     QUEUE_LOGOUT_INSTANCE: {
         name: "logout_instance_",
-        options: { durable: true }
-    },
+        options: { 
+            durable: true,
+            deadLetterExchange: "dead_letter_exchange", 
+            deadLetterRoutingKey: ""
+        }
+    }
 }

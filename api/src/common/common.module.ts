@@ -6,7 +6,7 @@ import { JwtAuth } from './adapters/auth/jwt-auth';
 import { RabbitmqProducer } from './adapters/queue/rabbitmq-producer';
 import { S3Storage } from './adapters/storage/s3-storage';
 import { Provider } from './constants/provider';
-import { Exchange, ExchangeType } from './constants/rabbitmq';
+import { DeadLetterOptions, Exchange, ExchangeType } from './constants/rabbitmq';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { WinstonLogger } from './adapters/logger/winston-logger';
@@ -33,7 +33,11 @@ import { WinstonLogger } from './adapters/logger/winston-logger';
                         {
                             name: Exchange.LOGOUT_INSTANCE,
                             type: ExchangeType.DIRECT
-                        }
+                        }, 
+                        {
+                            name: DeadLetterOptions.EXCHANGE,
+                            type: ExchangeType.FANOUT
+                        },
                     ],
                     uri: configService.get("RABBIT_URI")
                 }
