@@ -155,3 +155,9 @@ Explain each step:
 - 3º step: Send message for **Rabbitmq** queue. In this case for each instance i will create queue named **logout_instance_instance_id_here**.
 - 4º step: bot instance get the message and logout whatsapp instance. 
 
+## How to scale application
+
+- **Api**: you can scale api horizontally, you can create a lot machines with api code and put load balancer in front, load balance go to spread request between machines where api running.
+- **Postgresql**: you can increase the hardware in database machine.
+- **Bot**: you can create more instances, because all instances are listen the same queue when new message available to process. For example: you have 1 instance, but your demand increase to resolve this problem you can create a new instance, after execute login the new instance you have 2 instance to process all demand you have. **WARNING**: I recommend you each instance has a new What'sapp number, case you send a lot message using one number What'sapp can block you number because behaviour no common.
+- **Consumer(Queue)**: case your demand increase to process all messages received you only need to create another process the consumer.
