@@ -70,7 +70,7 @@ Link: [Learm more about architecture here](./ARCHITECTURE.md)
 - Setup rabbitmq execute command: **npm run build && node dist/setup-rabbitmq.js**
 - Execute command **npm run start:dev**
 - Access address http://localhost:3000/docs to load swagger documentation for you.
-
+- Optional case you want test in Insominia get file **Insomnia-endpoints.json** within directory **documents** and import in Insominia
 
 # Instructions to run locally api
 - Clone project
@@ -87,7 +87,7 @@ Link: [Learm more about architecture here](./ARCHITECTURE.md)
   - **npm run build**
   - **node dist/setup-rabbitmq.js**
 - Access address http://localhost:3000/docs to load swagger documentation for you.
-
+- Optional case you want test in Insominia get file **Insomnia-endpoints.json** within directory **documents** and import in Insominia
 
 # Instructions to run locally instance(bot) what'sapp without docker
 - Execute all instructions the api without docker
